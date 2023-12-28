@@ -1,0 +1,17 @@
+{
+  "name": "video-translator-combine",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev --parallel --continue --no-daemon"
+  },
+  "keywords": [],
+  "author": "Alexey",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

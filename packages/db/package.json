@@ -1,0 +1,21 @@
+{
+  "name": "@video-translator-combine/db",
+  "version": "1.0.0",
+  "description": "@auto-video/db",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "start": "node ./dist/index.mjs",
+    "dev": "tsup ./src/index.ts --format esm --watch --onSuccess \"node ./dist/index.mjs\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5"
+  },
+  "keywords": [],
+  "author": "Alexey",
+  "license": "MIT"
+}

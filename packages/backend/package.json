@@ -1,0 +1,25 @@
+{
+  "name": "@video-translator-combine/backend",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "build": "tsup ./src/index.ts --format esm",
+    "start": "node ./dist/index.js",
+    "dev": "tsup ./src/index.ts --format esm --watch --onSuccess \"node ./dist/index.js\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@video-translator-combine/db": "*",
+    "natural-compare": "^1.4.0",
+    "execa": "^8.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.5",
+    "@types/natural-compare": "^1.4.3"
+  },
+  "keywords": [],
+  "author": "Alexey",
+  "license": "ISC"
+}
