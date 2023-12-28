@@ -5,3 +5,5 @@ dist
 *.mp3
 .vscode
 .turbo
+/packages/translator
+/**/mocks

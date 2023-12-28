@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": false,
+    "esModuleInterop": false,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "ESNext",
+    "noEmit": true,
+    "skipLibCheck": false,
+    "target": "ESNext",
+    "types": ["vite/client"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
