@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "moduleResolution": "NodeNext"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "*.d.ts"],
   "exclude": ["node_modules"],
   "lib": ["esnext"],
   "ts-node": {

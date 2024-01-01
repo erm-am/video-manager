@@ -74,11 +74,11 @@ export const createAMDResizeCommand = () => {
   return [[]];
 };
 
-export const createGetVideoInfo = (inputVideoFilePath: string, outputFileName: string) => {
+export const createGetVideoInfoCommand = (inputVideoFilePath: string) => {
   // Получить информацию о видео через ffprobe
   return [
-    ['-y'],
     ['-hide_banner'],
+    ['-show_format'],
     ['-v', 'panic'],
     ['-select_streams', 'v:0'],
     ['-print_format', 'json'],

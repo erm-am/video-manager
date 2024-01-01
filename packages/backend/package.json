@@ -12,7 +12,8 @@
   "dependencies": {
     "@video-translator-combine/db": "*",
     "natural-compare": "^1.4.0",
-    "execa": "^8.0.1"
+    "execa": "^8.0.1",
+    "googleapis": "^129.0.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
