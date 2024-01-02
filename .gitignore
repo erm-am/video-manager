@@ -3,6 +3,7 @@ build
 dist
 *.mp4
 *.mp3
+*.txt
 .vscode
 .turbo
 /packages/translator

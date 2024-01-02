@@ -2,15 +2,7 @@ export const createJoinVideosCommand = (inputFilePath: string, outputFilePath: s
   // Склеить видео без перекодирования
   // Есть ограничения (разрешения экрана должно совпадать)
   // Todo: использовать createCudaResizeCommand перед импортом видео.
-  return [
-    ['-y'],
-    ['-hide_banner'],
-    ['-f', 'concat'],
-    ['-safe', '0'],
-    ['-i', inputFilePath],
-    ['-c', 'copy'],
-    [outputFilePath],
-  ];
+  return [['-y'], ['-hide_banner'], ['-f', 'concat'], ['-safe', '0'], ['-i', inputFilePath], ['-c', 'copy'], [outputFilePath]];
 };
 
 export const createSplitVideoCommand = (
@@ -33,11 +25,7 @@ export const createSplitVideoCommand = (
   ];
 };
 
-export const createReplaceAudioCommand = (
-  inputVideoFilePath: string,
-  inputAudioFilePath: string,
-  outputFileName: string,
-) => {
+export const createReplaceAudioCommand = (inputVideoFilePath: string, inputAudioFilePath: string, outputFileName: string) => {
   // Заменить аудиодорожку в видео
   return [
     ['-y'],
@@ -51,7 +39,7 @@ export const createReplaceAudioCommand = (
     [outputFileName],
   ];
 };
-export const createCudaResizeCommand = (inputVideoFilePath: string, outputFileName: string) => {
+export const createCudaResizeCommand = (resulution: string, inputVideoFilePath: string, outputFileName: string) => {
   // Преобзование разрешение видео через GPU (функция только для Nvidia)
   // https://docs.nvidia.com/video-technologies/video-codec-sdk/12.1/ffmpeg-with-nvidia-gpu/index.html
   // https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new
@@ -62,7 +50,7 @@ export const createCudaResizeCommand = (inputVideoFilePath: string, outputFileNa
     ['-hwaccel', 'cuda'],
     ['-hwaccel_output_format', 'cuda'],
     ['-i', inputVideoFilePath],
-    ['-vf', 'scale_cuda=1280:720'],
+    ['-vf', `scale_cuda=${resulution}`],
     ['-c:a', 'copy'],
     ['-c:v', 'h264_nvenc'],
     [outputFileName],
