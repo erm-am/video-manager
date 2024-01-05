@@ -1,16 +1,10 @@
 export const createJoinVideosCommand = (inputFilePath: string, outputFilePath: string) => {
   // Склеить видео без перекодирования
   // Есть ограничения (разрешения экрана должно совпадать)
-  // Todo: использовать createCudaResizeCommand перед импортом видео.
   return [['-y'], ['-hide_banner'], ['-f', 'concat'], ['-safe', '0'], ['-i', inputFilePath], ['-c', 'copy'], [outputFilePath]];
 };
 
-export const createSplitVideoCommand = (
-  inputFilePath: string,
-  outputFilePath: string,
-  outputFileName: string,
-  maxDurationInSeconds: number,
-) => {
+export const createSplitVideoCommand = (inputFilePath: string, outputFolderPath: string, maxDurationInSeconds: number) => {
   // Разбить видео на несколько частей
   return [
     ['-y'],
@@ -39,7 +33,7 @@ export const createReplaceAudioCommand = (inputVideoFilePath: string, inputAudio
     [outputFileName],
   ];
 };
-export const createCudaResizeCommand = (resulution: string, inputVideoFilePath: string, outputFileName: string) => {
+export const createCudaResizeCommand = (resolution: string, inputVideoFilePath: string, outputFileName: string) => {
   // Преобзование разрешение видео через GPU (функция только для Nvidia)
   // https://docs.nvidia.com/video-technologies/video-codec-sdk/12.1/ffmpeg-with-nvidia-gpu/index.html
   // https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new
@@ -50,27 +44,9 @@ export const createCudaResizeCommand = (resulution: string, inputVideoFilePath: 
     ['-hwaccel', 'cuda'],
     ['-hwaccel_output_format', 'cuda'],
     ['-i', inputVideoFilePath],
-    ['-vf', `scale_cuda=${resulution}`],
+    ['-vf', `scale_cuda=${resolution}`],
     ['-c:a', 'copy'],
     ['-c:v', 'h264_nvenc'],
     [outputFileName],
-  ];
-};
-
-export const createAMDResizeCommand = () => {
-  // Todo
-  return [[]];
-};
-
-export const createGetVideoInfoCommand = (inputVideoFilePath: string) => {
-  // Получить информацию о видео через ffprobe
-  return [
-    ['-hide_banner'],
-    ['-show_format'],
-    ['-v', 'panic'],
-    ['-select_streams', 'v:0'],
-    ['-print_format', 'json'],
-    ['-show_entries', 'stream=bit_rate,width,height,display_aspect_ratio,duration'],
-    [inputVideoFilePath],
   ];
 };
