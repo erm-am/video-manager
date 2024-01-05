@@ -10,10 +10,8 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@video-translator-combine/db": "*",
     "natural-compare": "^1.4.0",
     "execa": "^8.0.1",
-    "googleapis": "^129.0.0",
     "express": "4.18.2"
   },
   "devDependencies": {
