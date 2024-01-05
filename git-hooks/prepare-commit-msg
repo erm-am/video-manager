@@ -1,16 +1,14 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const { execSync } = require("child_process");
+const fs = require('fs');
+const { execSync } = require('child_process');
 const [nodeProcess, currentHookPath, commitMessageFilePath] = process.argv;
-const commitMessage = fs.readFileSync(commitMessageFilePath, "utf8");
-const files = execSync("git diff --cached --name-only").toString();
+const commitMessage = fs.readFileSync(commitMessageFilePath, 'utf8');
+const files = execSync('git diff --cached --name-only').toString();
+console.log('files changed:', files);
 const prefix = [];
-if (files.includes("package/frontend")) prefix.push("frontend");
-if (files.includes("package/backend")) prefix.push("backend");
+if (files.includes('package/frontend')) prefix.push('frontend');
+if (files.includes('package/backend')) prefix.push('backend');
 if (prefix.length) {
-  fs.writeFileSync(
-    commitMessageFilePath,
-    `[${prefix.toString()}] ${commitMessage}`,
-    "utf8"
-  );
+  fs.writeFileSync(commitMessageFilePath, `[${prefix.toString()}] ${commitMessage}`, 'utf8');
+  console.log(`Added prefix: ${prefix.toString()}`);
 }
