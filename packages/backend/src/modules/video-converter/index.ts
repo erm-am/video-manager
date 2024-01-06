@@ -1,8 +1,8 @@
-import { createChildProcess, getUniqHash } from '../../shared/utils.js';
-import { fileManager } from '../file-manager/index.js';
-import { VideoMeta } from '../video-analyzer/types.js';
+import { createChildProcess } from '@/shared/utils.js';
 import { createCudaResizeCommand, createJoinVideosCommand, createSplitVideoCommand } from './commands.js';
 import { addPrefixToFileName, createInputFileList, prepareVideoListFormat } from './utils.js';
+import { fileManager } from '../file-manager/index.js';
+import { VideoMeta } from '../video-analyzer/types.js';
 
 const scaleVideo = async (targetResolution: string, inputFilePath: string, autoRemover = true) => {
   const originalFilePath = inputFilePath;

@@ -1,4 +1,4 @@
-import { getUniqHash } from '../../shared/utils.js';
+import { getUniqHash } from '@/shared/utils.js';
 import { fileManager } from '../file-manager/index.js';
 
 export const addPrefixToFileName = async (filePath: string, prefix: string) => {

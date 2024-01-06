@@ -1,8 +1,9 @@
 import naturalCompare from 'natural-compare';
-import { videoAnalizer } from '../../modules/video-analyzer/index.js';
-import { videoConverter } from '../../modules/video-converter/index.js';
+
 import { SplitConfig, MergeConfig } from './types.js';
-import { fileManager } from '../../modules/file-manager/index.js';
+import { fileManager } from '@/modules/file-manager/index.js';
+import { videoAnalizer } from '@/modules/video-analyzer/index.js';
+import { videoConverter } from '@/modules/video-converter/index.js';
 
 const merge = async (config: MergeConfig) => {
   const { inputVideoFolderPath, outputVideoPath } = config;

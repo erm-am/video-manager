@@ -1,6 +1,6 @@
 import path from 'path';
 import { videoCombine } from './services/video-combine/index.js';
-import { ONE_HOUR_IN_SECONDS, VIDEO_FOLDER_PATH } from './shared/config.js';
+import { VIDEO_FOLDER_PATH } from './shared/config.js';
 
 // await videoCombine.merge({
 //   inputVideoFolderPath: VIDEO_FOLDER_PATH,
