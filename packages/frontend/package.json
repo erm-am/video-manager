@@ -8,14 +8,21 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@emotion/babel-plugin": "^11.11.0",
+    "@emotion/core": "^11.0.0",
+    "react-router-dom": "^6.21.1",
+    "react-dropzone": "^14.2.3",
+    "axios": "^1.6.5"
   },
   "devDependencies": {
     "@types/react-dom": "^18.2.18",
-    "@types/react": "^18.2.45",
+    "@types/react": "^18.2.47",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "vite": "^5.0.11"
   },
   "author": "Alexey",
   "license": "ISC"

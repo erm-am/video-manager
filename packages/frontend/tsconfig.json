@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "outDir": "dist",
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
@@ -11,6 +15,7 @@
     "noEmit": true,
     "skipLibCheck": false,
     "target": "ESNext",
+    "moduleResolution": "Node",
     "types": ["vite/client"]
   },
   "include": ["src"],
