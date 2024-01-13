@@ -12,9 +12,9 @@ export const UploadManagerPage = () => {
 
   const handleUpload = async () => {
     await httpClient.fileUploader.parallelUploadFiles(files, (id, progressEvent: AxiosProgressEvent) => {
-      const { loaded, total, progress, rate } = progressEvent;
+      const { loaded, total, progress } = progressEvent;
       let percent = Math.floor(progress * 100);
-      console.log(rate);
+      console.log(`id:${id} -> ${percent}`);
     });
   };
 

@@ -1,4 +1,14 @@
-const splitFileIntoChunks = (file: File, chunkSizeInBytes: number): Promise<Blob[]> => {
+import { FileWithPath } from 'react-dropzone';
+
+export type ChunksWithFileMeta = {
+  chunks: Blob[];
+  meta: {
+    totalSize: number;
+    name: string;
+  };
+};
+
+export const splitFileIntoChunks = (file: FileWithPath, chunkSizeInBytes: number): Promise<ChunksWithFileMeta> => {
   return new Promise((resolve) => {
     let chunks: Blob[] = [];
     let fileSize = file.size;
@@ -9,6 +19,12 @@ const splitFileIntoChunks = (file: File, chunkSizeInBytes: number): Promise<Blob
       start = end;
       end = start + chunkSizeInBytes;
     }
-    resolve(chunks);
+    resolve({
+      chunks,
+      meta: {
+        name: file.name,
+        totalSize: file.size,
+      },
+    });
   });
 };
