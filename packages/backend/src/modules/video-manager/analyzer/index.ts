@@ -1,4 +1,4 @@
-import { createChildProcess } from '@/shared/utils.js';
+import { createChildProcess } from '@/utils/core.utils.js';
 import { createGetVideoInfoCommand } from './commands.js';
 import { VideoMeta } from './types.js';
 import { groupVideoListByScreenResolution } from './utils.js';

@@ -1,15 +1,16 @@
 import naturalCompare from 'natural-compare';
 
 import { SplitConfig, MergeConfig } from './types.js';
-import { fileManager } from '@/modules/file-manager/index.js';
-import { videoAnalizer } from '@/modules/video-analyzer/index.js';
-import { videoConverter } from '@/modules/video-converter/index.js';
+
+import { videoAnalizer } from '@/modules/video-manager/analyzer/index.js';
+import { videoConverter } from '@/modules/video-manager/converter/index.js';
+import { fileUtils } from '@/utils/file.utils.js';
 
 const merge = async (config: MergeConfig) => {
   const { inputVideoFolderPath, outputVideoPath } = config;
   try {
-    const fileList = await fileManager.getFileList(inputVideoFolderPath, { extensions: ['mp4', 'avi'] });
-    const sortedFileList = fileManager.sortFileList(fileList, (a, b) => naturalCompare(a, b));
+    const fileList = await fileUtils.getFileList(inputVideoFolderPath, { extensions: ['mp4', 'avi'] });
+    const sortedFileList = fileUtils.sortFileList(fileList, (a, b) => naturalCompare(a, b));
     const fileListWithMeta = await videoAnalizer.getMetaInfoList(sortedFileList);
     const hasDistinctResolutions = videoAnalizer.checkDistinctResolutions(fileListWithMeta);
     if (hasDistinctResolutions) {

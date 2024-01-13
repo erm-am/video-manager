@@ -1,14 +1,15 @@
-import { createChildProcess } from '@/shared/utils.js';
+import { createChildProcess } from '@/utils/core.utils.js';
 import { createCudaResizeCommand, createJoinVideosCommand, createSplitVideoCommand } from './commands.js';
 import { addPrefixToFileName, createInputFileList, prepareVideoListFormat } from './utils.js';
-import { fileManager } from '../file-manager/index.js';
-import { VideoMeta } from '../video-analyzer/types.js';
+
+import { fileUtils } from '@/utils/file.utils.js';
+import { VideoMeta } from '../types.js';
 
 const scaleVideo = async (targetResolution: string, inputFilePath: string, autoRemover = true) => {
   const originalFilePath = inputFilePath;
   const newFilePath = await addPrefixToFileName(originalFilePath, 'original');
   return createChildProcess('ffmpeg', createCudaResizeCommand(targetResolution, newFilePath, originalFilePath)).then(() => {
-    if (autoRemover) fileManager.removeFile(newFilePath);
+    if (autoRemover) fileUtils.removeFile(newFilePath);
   });
 };
 const parallelScaleVideos = async (targetResolution: string, fileListWithMeta: VideoMeta[], autoRemover = true) => {
@@ -18,7 +19,7 @@ const parallelScaleVideos = async (targetResolution: string, fileListWithMeta: V
       const originalFilePath = file.path;
       const newFilePath = await addPrefixToFileName(originalFilePath, 'original');
       return createChildProcess('ffmpeg', createCudaResizeCommand(targetResolution, newFilePath, originalFilePath)).then(() => {
-        if (autoRemover) fileManager.removeFile(newFilePath);
+        if (autoRemover) fileUtils.removeFile(newFilePath);
       });
     }),
   );
@@ -30,7 +31,7 @@ const mergeVideos = async (videoFileList: string[], outputFilePath: string, auto
   const inputFile = await createInputFileList(text);
 
   const ffmpegProcess = await createChildProcess('ffmpeg', createJoinVideosCommand(inputFile, outputFilePath)).then(async () => {
-    if (autoRemover) await fileManager.removeFile(inputFile);
+    if (autoRemover) await fileUtils.removeFile(inputFile);
   });
   return ffmpegProcess;
 };

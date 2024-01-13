@@ -7,9 +7,8 @@ import cors from '@fastify/cors';
 import fastifyWebsocket from '@fastify/websocket';
 import secureSession from '@fastify/secure-session';
 
-import { fileManagerRoutes } from './routes/file-manager.routes.js';
-import { taskManagerRoutes } from './routes/task-manager.routes.js';
-import { ONE_MINUTE_IN_SECONDS, SESSION_SECRET_KEY_PATH } from './shared/config.js';
+import { ONE_MINUTE_IN_SECONDS, SESSION_SECRET_KEY_PATH } from './configs/core.config.js';
+import { fileManagerRoutes } from './modules/file-manager/file-manager.routes.js';
 
 const server = async () => {
   const server = fastify({ logger: false });
@@ -33,7 +32,6 @@ const server = async () => {
 
   await server.register(
     async (fastify) => {
-      fastify.register(taskManagerRoutes, { prefix: '/task-manager' });
       fastify.register(fileManagerRoutes, { prefix: '/file-manager' });
     },
     { prefix: '/api/v1' },

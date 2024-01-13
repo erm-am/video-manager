@@ -1,6 +1,6 @@
 import path from 'path';
 import { videoCombine } from './services/video-combine/index.js';
-import { VIDEO_FOLDER_PATH } from './shared/config.js';
+import { VIDEO_FOLDER_PATH } from './configs/core.config.js';
 import { PrismaClient } from '@prisma/client';
 import { server } from './server.js';
 // await videoCombine.merge({

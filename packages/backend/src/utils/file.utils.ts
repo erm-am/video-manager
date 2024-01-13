@@ -1,6 +1,12 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { CompareFunction, FileListOptions } from './types.js';
+
+export type VideoFileExtensions = 'mp4' | 'avi' | 'mov';
+
+export type CompareFunction = (a: string, b: string) => number;
+export type FileListOptions = {
+  extensions: VideoFileExtensions[];
+};
 
 const getFileList = async (absuluteFolderPath: string, options: FileListOptions) => {
   const files = await fs.readdir(absuluteFolderPath);
@@ -15,7 +21,7 @@ const removeFile = async (filePath: string) => await fs.unlink(filePath);
 const createFile = async (inputTempFileName: string, textFile: string) => await fs.writeFile(inputTempFileName, textFile);
 const getFileInfo = (filePath: string) => path.parse(filePath);
 
-export const fileManager = {
+export const fileUtils = {
   renameFile,
   getFileList,
   sortFileList,
