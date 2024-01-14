@@ -37,7 +37,7 @@ const split = async (config: SplitConfig) => {
   }
 };
 
-export const videoCombine = {
+export const videoManager = {
   merge,
   split,
 };
