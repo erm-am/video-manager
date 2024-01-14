@@ -2,11 +2,22 @@ import React, { useCallback, useState } from 'react';
 import { FileWithPath, useDropzone } from 'react-dropzone';
 import styled from '@emotion/styled';
 
-interface UploaderProps {
-  onDrop: (acceptedFiles: FileWithPath[]) => void;
-}
+export type AcceptedFile = {
+  id: number;
+  file: FileWithPath;
+  progress: number;
+};
+type UploaderProps = {
+  onDrop: (acceptedFiles: AcceptedFile[]) => void;
+};
 export const Uploader = (props: UploaderProps) => {
-  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => props.onDrop(acceptedFiles), [props.onDrop]);
+  const onDrop = useCallback(
+    (acceptedFiles: FileWithPath[]) => {
+      const acceptedFilesWithProgress = acceptedFiles.map((file, index) => ({ id: index, progress: 0, file }));
+      props.onDrop(acceptedFilesWithProgress);
+    },
+    [props.onDrop],
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <UploaderContainer {...getRootProps()}>

@@ -1,32 +1,56 @@
 import { DefaultLayout } from '@/layouts/default';
-import { Uploader } from '@/shared/ui/uploader';
-import React, { useEffect, useRef, useState } from 'react';
-import { FileWithPath } from 'react-dropzone';
+import { AcceptedFile, Uploader } from '@/shared/ui/uploader';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { httpClient } from '@/shared/api';
-import { AxiosProgressEvent } from 'axios';
+import { ProgressBar } from '@/shared/ui/progress-bar';
+import { useBufferTimer } from './use-buffer-timer';
 
 export const UploadManagerPage = () => {
-  const [files, setFiles] = useState<FileWithPath[]>([]);
-  const onDrop = (acceptedFiles: FileWithPath[]) => setFiles(acceptedFiles);
+  const [acceptedFiles, setAcceptedFiles] = useState<AcceptedFile[]>([]);
+  const bufferTimer = useBufferTimer({
+    delayedCallback: (bufferProgress) => {
+      setAcceptedFiles((prev) => {
+        return prev.map((file) => ({
+          ...file,
+          progress: bufferProgress.has(file.id) ? bufferProgress.get(file.id) : file.progress,
+        }));
+      });
+    },
+    delay: 1000,
+  });
 
-  const handleUpload = async () => {
-    await httpClient.fileUploader.parallelUploadFiles(files, (id, progressEvent: AxiosProgressEvent) => {
-      const { loaded, total, progress } = progressEvent;
-      let percent = Math.floor(progress * 100);
-      console.log(`id:${id} -> ${percent}`);
-    });
+  const onDrop = (acceptedFiles: AcceptedFile[]) => setAcceptedFiles(acceptedFiles);
+  const handleRemoveAll = () => setAcceptedFiles([]);
+  const handleUploadFiles = () => {
+    bufferTimer.start();
+    const files = acceptedFiles.map(({ id, file }) => ({ id, file }));
+    httpClient.fileUploader
+      .parallelUploadFiles(files, (id, percent: number) => {
+        bufferTimer.addToBuffer(id, percent);
+      })
+      .finally(() => {
+        bufferTimer.stop();
+      });
   };
 
+  console.log('render');
   return (
     <DefaultLayout>
       <FileList>
-        {files.map((file) => {
-          return <File key={file.name}>{file.path} </File>;
+        {acceptedFiles.map(({ id, file, progress }) => {
+          return (
+            <div key={id}>
+              <ProgressBar progress={progress} />
+              <File>{file.path}</File>
+            </div>
+          );
         })}
       </FileList>
+
       <Uploader onDrop={onDrop} />
-      <div onClick={handleUpload}>Загрузить</div>
+      <div onClick={handleUploadFiles}>Загрузить</div>
+      <div onClick={handleRemoveAll}>Удалить все</div>
     </DefaultLayout>
   );
 };
