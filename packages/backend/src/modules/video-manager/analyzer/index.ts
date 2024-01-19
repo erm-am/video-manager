@@ -1,7 +1,8 @@
 import { createChildProcess } from '@/utils/core.utils.js';
 import { createGetVideoInfoCommand } from './commands.js';
-import { VideoMeta } from './types.js';
+
 import { groupVideoListByScreenResolution } from './utils.js';
+import { VideoMeta } from '../types.js';
 
 const checkDistinctResolutions = (videoInfoList: VideoMeta[]): boolean => {
   return groupVideoListByScreenResolution(videoInfoList).length > 1;

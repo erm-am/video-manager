@@ -1,5 +1,6 @@
 import path from 'path';
 export const VIDEO_FOLDER_PATH = path.resolve(process.cwd(), 'videos');
+export const UPLOAD_FOLDER_PATH = path.resolve(process.cwd(), 'upload');
 export const SESSION_SECRET_KEY_PATH = path.resolve(process.cwd(), 'demo-session-secret.key');
 
 export const ONE_HOUR_IN_SECONDS = 3600;

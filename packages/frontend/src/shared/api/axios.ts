@@ -1,5 +1,9 @@
 import axios from 'axios';
+import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
 
+interface AdaptAxiosRequestConfig extends AxiosRequestConfig {
+  headers: AxiosRequestHeaders;
+}
 const createMainAxiosInstance = () => {
   return axios.create({
     headers: {
@@ -9,18 +13,16 @@ const createMainAxiosInstance = () => {
   });
 };
 
-const createRequestInterceptorAuth = (instanse) => {
-  instanse.interceptors.request.use(
-    async (config) => {
-      return config;
-    },
-    (error) => Promise.reject(error),
+const createRequestInterceptorAuth = (instance: AxiosInstance) => {
+  instance.interceptors.request.use(
+    (config: AdaptAxiosRequestConfig): AdaptAxiosRequestConfig => config,
+    (error: AxiosError) => Promise.reject(error),
   );
 };
-const createResponseInterceptorAuth = (instanse) => {
-  instanse.interceptors.response.use(
-    (response) => response.data,
-    (error) => Promise.reject(error),
+const createResponseInterceptorAuth = (instance: AxiosInstance) => {
+  instance.interceptors.response.use(
+    (response: AxiosResponse): AxiosResponse => response,
+    (error: AxiosError) => Promise.reject(error),
   );
 };
 

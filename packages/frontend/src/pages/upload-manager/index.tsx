@@ -26,7 +26,7 @@ export const UploadManagerPage = () => {
     bufferTimer.start();
     const files = acceptedFiles.map(({ id, file }) => ({ id, file }));
     httpClient.fileUploader
-      .parallelUploadFiles(files, (id, percent: number) => {
+      .parallelUploadFiles(files, (id, percent, uploadId) => {
         bufferTimer.addToBuffer(id, percent);
       })
       .finally(() => {

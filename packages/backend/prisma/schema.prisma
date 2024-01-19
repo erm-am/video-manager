@@ -12,8 +12,24 @@ datasource db {
 
 model Task {
   id     Int    @id @default(autoincrement())
-  name   String @db.VarChar(255)
-  status String @db.VarChar(255)
+  name   String @db.Char(255)
+  status String @db.Char(255)
 
   @@map(name: "tasks")
+}
+
+model File {
+  id        Int    @id @default(autoincrement())
+  user_id   String @db.Char(255)
+  upload_id String @db.Char(255)
+
+  @@map(name: "files")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String @unique @db.Char(255)
+  password String @db.Char(255)
+
+  @@map(name: "users")
 }
