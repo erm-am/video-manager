@@ -9,6 +9,20 @@ import { ONE_HOUR_IN_SECONDS, SESSION_SECRET_KEY_PATH } from './configs/core.con
 import { fileManagerRoutes } from './modules/file-manager/file-manager.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 
+import { createBullBoard } from '@bull-board/api';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
+import { FastifyAdapter } from '@bull-board/fastify';
+import { Queue, Worker } from 'bullmq';
+import { videoAnalyzerQueue } from './queues/index.js';
+
+const serverAdapter = new FastifyAdapter();
+
+serverAdapter.setBasePath('/ui');
+createBullBoard({
+  queues: [new BullMQAdapter(videoAnalyzerQueue)],
+  serverAdapter,
+});
+
 const server = async () => {
   const server = fastify({ logger: false });
 
@@ -18,9 +32,10 @@ const server = async () => {
     key: fs.readFileSync(SESSION_SECRET_KEY_PATH),
     cookie: {
       path: '/',
-      maxAge: ONE_HOUR_IN_SECONDS * 5,
+      maxAge: ONE_HOUR_IN_SECONDS * 10,
     },
   });
+
   await server.register(cors);
   await server.register(fastifyWebsocket);
   await server.register(fastifyMultipart, {
@@ -28,6 +43,9 @@ const server = async () => {
       fileSize: Number.MAX_SAFE_INTEGER,
     },
   });
+
+  //@ts-ignore
+  server.register(serverAdapter.registerPlugin(), { prefix: '/ui' });
 
   await server.register(
     async (fastify) => {

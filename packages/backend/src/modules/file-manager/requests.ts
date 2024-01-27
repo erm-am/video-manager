@@ -1,8 +1,8 @@
-export type DoneUploadRequest = {
+export type UploadFilesRequest = {
+  Body: {};
+};
+export type StartfileAnalysisRequest = {
   Body: {
     uploadId: string;
   };
-};
-export type UploadFilesRequest = {
-  Body: {};
 };

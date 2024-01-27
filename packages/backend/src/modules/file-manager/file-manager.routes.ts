@@ -1,12 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { doneUpload, uploadFiles } from './file-manager.controller.js';
+import { getRegisteredFileList, uploadFiles, startfileAnalysis } from './file-manager.controller.js';
 import { authHook } from '@/hooks/auth.js';
 
 export const fileManagerRoutes = async (fastify: FastifyInstance) => {
-  fastify.get('/test', { preHandler: authHook }, (req, reply) => {
-    return reply.status(200).send({ status: 'test' });
-  });
-
   fastify.post(
     '/upload',
     {
@@ -15,5 +11,18 @@ export const fileManagerRoutes = async (fastify: FastifyInstance) => {
     uploadFiles,
   );
 
-  fastify.post('/upload/done', { preHandler: authHook }, doneUpload);
+  fastify.get(
+    '/registered-file-list',
+    {
+      preHandler: authHook,
+    },
+    getRegisteredFileList,
+  );
+  fastify.post(
+    '/file-analysis',
+    {
+      preHandler: authHook,
+    },
+    startfileAnalysis,
+  );
 };

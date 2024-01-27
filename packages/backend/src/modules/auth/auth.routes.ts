@@ -7,7 +7,6 @@ export const authRoutes = async (fastify: FastifyInstance) => {
     return reply.status(200).send({ status: 'test' });
   });
   fastify.get('/login', login);
-
   fastify.post('/logout', { preHandler: authHook }, logout);
   fastify.post('/check-auth', { preHandler: authHook }, checkAuth);
 };
