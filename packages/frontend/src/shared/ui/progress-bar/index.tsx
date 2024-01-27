@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { FileWithPath, useDropzone } from 'react-dropzone';
 import styled from '@emotion/styled';
+import css from '@emotion/core';
 
 interface ProgressBarProps {
   progress: number;

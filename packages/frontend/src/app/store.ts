@@ -1,6 +1,5 @@
 import { httpClient } from '@/shared/api';
 import { create } from 'zustand';
-const delay = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
 interface Profile {
   id: string;
@@ -37,7 +36,6 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   checkAuth: async () => {
     try {
       set({ isLoading: true });
-      await delay();
       await httpClient.auth.checkAuth();
       set({ isAuth: true });
     } catch (e) {

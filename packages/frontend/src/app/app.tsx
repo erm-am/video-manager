@@ -5,18 +5,22 @@ import { createRoot } from 'react-dom/client';
 import { Router } from '../router/index';
 import { useAuthStore } from './store';
 export const App = () => {
-  const { isLoading, checkAuth, login } = useAuthStore((state) => state);
-
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
   useEffect(() => {
     checkAuth();
   }, []);
-  // console.log('isAuth', isAuth);
-  // console.log('login', login());
-  // console.log('render');
+
   return (
-    <BrowserRouter>
-      <div>{isLoading ? 'loading' : 'ok'}</div>
-      <Router />
-    </BrowserRouter>
+    <>
+      {!isAuth || isLoading ? (
+        'loading (check session)'
+      ) : (
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      )}
+    </>
   );
 };

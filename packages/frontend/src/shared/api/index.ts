@@ -1,5 +1,5 @@
-import * as fileUploader from './video-uploader';
+import * as fileManager from './file-manager';
 import * as taskManager from './task-manager';
 import * as auth from './auth';
 
-export const httpClient = { fileUploader, taskManager, auth };
+export const httpClient = { fileManager, taskManager, auth };
