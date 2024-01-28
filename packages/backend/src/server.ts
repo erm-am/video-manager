@@ -4,27 +4,22 @@ import fastifyMultipart from '@fastify/multipart';
 import cors from '@fastify/cors';
 import fastifyWebsocket from '@fastify/websocket';
 import secureSession from '@fastify/secure-session';
-
 import { ONE_HOUR_IN_SECONDS, SESSION_SECRET_KEY_PATH } from './configs/core.config.js';
 import { fileManagerRoutes } from './modules/file-manager/file-manager.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
-
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
-import { Queue, Worker } from 'bullmq';
-import { videoAnalyzerQueue } from './queues/index.js';
-
-const serverAdapter = new FastifyAdapter();
-
-serverAdapter.setBasePath('/ui');
-createBullBoard({
-  queues: [new BullMQAdapter(videoAnalyzerQueue)],
-  serverAdapter,
-});
+import { videoAnalyzerQueue, mergeVideoFilesQueue } from './queues/index.js';
 
 const server = async () => {
   const server = fastify({ logger: false });
+  const serverAdapter = new FastifyAdapter();
+  serverAdapter.setBasePath('/ui');
+  createBullBoard({
+    queues: [new BullMQAdapter(videoAnalyzerQueue), new BullMQAdapter(mergeVideoFilesQueue)],
+    serverAdapter,
+  });
 
   await server.register(secureSession, {
     sessionName: 'session',
@@ -44,9 +39,7 @@ const server = async () => {
     },
   });
 
-  //@ts-ignore
-  server.register(serverAdapter.registerPlugin(), { prefix: '/ui' });
-
+  await server.register(serverAdapter.registerPlugin() as any, { prefix: '/ui' });
   await server.register(
     async (fastify) => {
       fastify.register(fileManagerRoutes, { prefix: '/file-manager' });

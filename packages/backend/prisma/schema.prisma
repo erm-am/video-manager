@@ -19,12 +19,17 @@ model Task {
 }
 
 model File {
-  id        Int    @id @default(autoincrement())
-  user_id   Int
-  upload_id String @db.Char(255)
-  name      String @db.Char(255)
-  user      User   @relation(fields: [user_id], references: [id])
-  status    String @db.Char(255)
+  id                   Int     @id @default(autoincrement())
+  user_id              Int
+  upload_id            String  @db.Char(255)
+  name                 String  @db.Char(255)
+  user                 User    @relation(fields: [user_id], references: [id])
+  status               String  @db.Char(255)
+  width                Int?
+  height               Int?
+  duration             Float?
+  bit_rate             Int?
+  display_aspect_ratio String? @db.Char(255)
 
   @@map(name: "files")
 }

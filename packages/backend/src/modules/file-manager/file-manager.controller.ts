@@ -5,7 +5,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { pipeline } from 'stream';
 import path from 'path';
 import { UPLOAD_FOLDER_PATH } from '@/configs/core.config.js';
-import { StartfileAnalysisRequest, UploadFilesRequest } from './requests.js';
+import { StartFileAnalysisRequest, StartMergeVideoFilesRequest, UploadFilesRequest } from './requests.js';
 import { fileManegerService } from './file-manager.service.js';
 
 const pump = util.promisify(pipeline);
@@ -40,13 +40,23 @@ export const getRegisteredFileList = async (request: FastifyRequest, reply: Fast
     return reply.status(400).send({ status: 'Загрузка с ошибкой' });
   }
 };
-export const startfileAnalysis = async (request: FastifyRequest<StartfileAnalysisRequest>, reply: FastifyReply) => {
+export const startFileAnalysis = async (request: FastifyRequest<StartFileAnalysisRequest>, reply: FastifyReply) => {
   try {
     const { id: userId } = request.session.get('user');
     const { uploadId } = request.body;
-    const jobs = await fileManegerService.startfileAnalysis(userId, uploadId);
+    const jobs = await fileManegerService.startFileAnalysis(userId, uploadId);
     return reply.status(200).send({ jobs });
   } catch (e) {
-    return reply.status(400).send({ status: 'ошибка запуска startfileAnalysis' });
+    return reply.status(400).send({ status: 'ошибка запуска startFileAnalysis' });
+  }
+};
+export const startMergeVideoFiles = async (request: FastifyRequest<StartMergeVideoFilesRequest>, reply: FastifyReply) => {
+  try {
+    const { id: userId } = request.session.get('user');
+    const { uploadId } = request.body;
+    const jobs = await fileManegerService.startMergeVideoFiles(userId, uploadId);
+    return reply.status(200).send({ jobs });
+  } catch (e) {
+    return reply.status(400).send({ status: 'ошибка запуска startMergeVideoFiles' });
   }
 };

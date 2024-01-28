@@ -7,21 +7,22 @@ import { videoConverter } from '@/modules/video-manager/converter/index.js';
 import { fileUtils } from '@/utils/file.utils.js';
 
 const merge = async (config: MergeConfig) => {
-  const { inputVideoFolderPath, outputVideoPath } = config;
+  const { files, outputVideoPath } = config;
   try {
-    const fileList = await fileUtils.getFileList(inputVideoFolderPath, { extensions: ['mp4', 'avi'] });
-    const sortedFileList = fileUtils.sortFileList(fileList, (a, b) => naturalCompare(a, b));
-    const fileListWithMeta = await videoAnalizer.getMetaInfoList(sortedFileList);
-    const hasDistinctResolutions = videoAnalizer.checkDistinctResolutions(fileListWithMeta);
+    // const fileList = await fileUtils.getFileList(inputVideoFolderPath, { extensions: ['mp4', 'avi'] });
+    // const sortedFileList = fileUtils.sortFileList(fileList, (a, b) => naturalCompare(a, b));
+
+    const hasDistinctResolutions = videoAnalizer.checkDistinctResolutions(files);
     if (hasDistinctResolutions) {
-      const { resolution, videosToScale } = videoAnalizer.getVideoListForScaling(fileListWithMeta);
+      const { resolution, videosToScale } = videoAnalizer.getVideoListForScaling(files);
       console.log(`Перед склеиванием необходимо преобразовать ${videosToScale.length} видео к ${resolution}`);
       await videoConverter.parallelScaleVideos(resolution, videosToScale);
       console.log('Преобразование завершено');
     }
-    console.log('Начали склеивать', sortedFileList);
-    await videoConverter.mergeVideos(sortedFileList, outputVideoPath);
+    console.log('Начали склеивать', files);
+    await videoConverter.mergeVideos(files, outputVideoPath);
     console.log('Склейка завершена');
+    return 'OK';
   } catch (error) {
     console.log(error);
   }

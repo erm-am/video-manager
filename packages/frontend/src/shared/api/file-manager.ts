@@ -10,9 +10,15 @@ type UploadFilesResponse = {
 
 export type RegisteredFile = {
   id: number;
-  id_user: number;
+  user_id: number;
   upload_id: string;
   name: string;
+  status: string;
+  width: number | null;
+  height: number | null;
+  duration: number | null;
+  bit_rate: number | null;
+  display_aspect_ratio: string | null;
 };
 export type RegistredFileListResponse = {
   fileList: RegisteredFile[];
@@ -45,3 +51,4 @@ export const uploadFiles = (files: FileWithPath[], onUploadProgress?: OnUploadPr
 
 export const getRegisteredFileList = () => api.get<RegistredFileListResponse>(`api/v1/file-manager/registered-file-list`);
 export const startFileAnalysis = (uploadId: string) => api.post(`api/v1/file-manager/file-analysis`, { uploadId });
+export const startMergeVideoFiles = (uploadId: string) => api.post(`api/v1/file-manager/merge-video-files`, { uploadId });

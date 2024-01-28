@@ -1,5 +1,6 @@
 import { getUniqHash } from '@/utils/core.utils.js';
 import { fileUtils } from '@/utils/file.utils.js';
+import { VideoMeta } from '../types.js';
 
 export const addPrefixToFileName = async (filePath: string, prefix: string) => {
   const newFilePath = filePath.replace(/(\.[^.]+)$/, `_${prefix}$1`);
@@ -14,4 +15,4 @@ export const createInputFileList = async (text: string) => {
   return inputFileName;
 };
 
-export const prepareVideoListFormat = (fileList: string[]) => fileList.map((filePath: string) => `file '${filePath}'`).join('\n');
+export const prepareVideoListFormat = (fileList: VideoMeta[]) => fileList.map((file: VideoMeta) => `file '${file.path}'`).join('\n');

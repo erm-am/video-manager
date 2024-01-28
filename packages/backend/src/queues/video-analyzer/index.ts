@@ -1,8 +1,7 @@
-import { REDIS_CONNECTION, RedisConnectionOptions } from '@/configs/redis.connection.config.js';
+import { RedisConnectionOptions } from '@/configs/redis.connection.config.js';
 import { setupVideoAnalyzerQueue } from './queue.js';
 import { setupVideoAnalyzerWorkers } from './worker.js';
-import { Job } from 'bullmq';
-import { videoAnalizer } from '@/modules/video-manager/analyzer/index.js';
+
 import { attachEventsToQueue, attachEventsToWorkers } from './events.js';
 import { setupVideoAnalyzerProcessor } from './processors.js';
 

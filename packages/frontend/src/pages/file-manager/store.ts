@@ -20,6 +20,7 @@ type FileManagerState = {
 type FileManagerActions = {
   getRegisteredFileList: () => Promise<void>;
   startFileAnalysis: (uploadId: string) => Promise<void>;
+  startMergeVideoFiles: (uploadId: string) => Promise<void>;
 };
 
 //utils
@@ -50,6 +51,16 @@ export const useFileManagerStore = create<FileManagerState & FileManagerActions>
     try {
       set({ isLoading: true });
       const response = await httpClient.fileManager.startFileAnalysis(uploadId);
+    } catch (e) {
+      set({ errors: 'ошибка' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  startMergeVideoFiles: async (uploadId: string) => {
+    try {
+      set({ isLoading: true });
+      const response = await httpClient.fileManager.startMergeVideoFiles(uploadId);
     } catch (e) {
       set({ errors: 'ошибка' });
     } finally {

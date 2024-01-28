@@ -3,10 +3,6 @@ export type SplitConfig = {
   outputFolder: string;
   maxDurationInSeconds: number;
 };
-export type MergeConfig = {
-  inputVideoFolderPath: string;
-  outputVideoPath: string;
-};
 
 export type VideoMeta = {
   path: string;
@@ -15,4 +11,9 @@ export type VideoMeta = {
   duration: number;
   displayAspectRatio: string;
   bitRate: number;
+};
+
+export type MergeConfig = {
+  files: VideoMeta[];
+  outputVideoPath: string;
 };

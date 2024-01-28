@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { getRegisteredFileList, uploadFiles, startfileAnalysis } from './file-manager.controller.js';
+import { getRegisteredFileList, uploadFiles, startFileAnalysis, startMergeVideoFiles } from './file-manager.controller.js';
 import { authHook } from '@/hooks/auth.js';
 
 export const fileManagerRoutes = async (fastify: FastifyInstance) => {
@@ -23,6 +23,13 @@ export const fileManagerRoutes = async (fastify: FastifyInstance) => {
     {
       preHandler: authHook,
     },
-    startfileAnalysis,
+    startFileAnalysis,
+  );
+  fastify.post(
+    '/merge-video-files',
+    {
+      preHandler: authHook,
+    },
+    startMergeVideoFiles,
   );
 };

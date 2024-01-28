@@ -1,31 +1,31 @@
 import { prisma } from '@/configs/prisma-connection.config.js';
 import { fileManegerService } from '@/modules/file-manager/file-manager.service.js';
 import { Job, Queue, Worker } from 'bullmq';
-import { VideoAnalyzerJobData, VideoAnalyzerJobResult } from './types.js';
+import { MergeVideoFilesJobData, MergeVideoFilesJobResult } from './types.js';
 type QueueEvents = {
-  onWaiting: (job: Job<VideoAnalyzerJobData>) => void;
+  onWaiting: (job: Job<MergeVideoFilesJobData>) => void;
 };
 type WorkerEvents = {
-  onActive: (job: Job<VideoAnalyzerJobData>) => void;
-  onCompleted: (job: Job<VideoAnalyzerJobData>, result: VideoAnalyzerJobResult) => void;
-  onFailed: (job?: Job<VideoAnalyzerJobData>, error?: Error) => void;
+  onActive: (job: Job<MergeVideoFilesJobData>) => void;
+  onCompleted: (job: Job<MergeVideoFilesJobData>, result: MergeVideoFilesJobResult) => void;
+  onFailed: (job?: Job<MergeVideoFilesJobData>, error?: Error) => void;
 };
 
 const queueEvents: QueueEvents = {
   onWaiting: async (job) => {
-    await fileManegerService.updateFileStatus(job.data.fileId, 'waiting');
+    // await fileManegerService.updateFileStatus(job.data.fileId, 'waiting');
   },
 };
 const workerEvents: WorkerEvents = {
   onActive: async (job) => {
-    await fileManegerService.updateFileStatus(job.data.fileId, 'active');
+    //await fileManegerService.updateFileStatus(job.data.fileId, 'active');
   },
   onCompleted: async (job, data) => {
-    await fileManegerService.updateFileProperties(job.data.fileId, 'completed', data.result);
+    //await fileManegerService.updateFileProperties(job.data.fileId, 'completed', data.result);
   },
   onFailed: async (job?: Job) => {
     if (job) {
-      await fileManegerService.updateFileStatus(job.data.fileId, 'failed');
+      //await fileManegerService.updateFileStatus(job.data.fileId, 'failed');
     }
   },
 };

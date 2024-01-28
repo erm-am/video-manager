@@ -26,7 +26,7 @@ const parallelScaleVideos = async (targetResolution: string, fileListWithMeta: V
   return ffprobeProcesses;
 };
 
-const mergeVideos = async (videoFileList: string[], outputFilePath: string, autoRemover = true) => {
+const mergeVideos = async (videoFileList: VideoMeta[], outputFilePath: string, autoRemover = true) => {
   const text = prepareVideoListFormat(videoFileList);
   const inputFile = await createInputFileList(text);
 

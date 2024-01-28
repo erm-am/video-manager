@@ -10,6 +10,7 @@ import { useFileManagerStore } from './store';
 export const FileManagerPage = () => {
   const getRegisteredFileList = useFileManagerStore((state) => state.getRegisteredFileList);
   const startFileAnalysis = useFileManagerStore((state) => state.startFileAnalysis);
+  const startMergeVideoFiles = useFileManagerStore((state) => state.startMergeVideoFiles);
   const fileList = useFileManagerStore((state) => state.fileList);
   const groupedFileList = useFileManagerStore((state) => state.groupedFileList);
   useEffect(() => {
@@ -26,16 +27,24 @@ export const FileManagerPage = () => {
   const handleUploadFiles = () => {
     httpClient.fileManager.uploadFiles(acceptedFiles, (percent) => setProgress(percent)).catch(() => setProgress(0));
   };
-
+  // TODO, временное решение
   return (
     <DefaultLayout>
       <div>
         {groupedFileList.map(({ uploadId, files }) => (
           <div key={uploadId}>
-            <strong onClick={() => startFileAnalysis(uploadId)}>(start){uploadId}</strong>
+            <h3 onClick={() => startFileAnalysis(uploadId)}>(start meta parser){uploadId}</h3>
+
+            <h3 onClick={() => startMergeVideoFiles(uploadId)}>(merge video files){uploadId}</h3>
             <div>
               {files.map((file) => (
-                <div>{file.name}</div>
+                <div style={{ display: 'flex' }}>
+                  <div>{file.name}</div>
+                  <div> - {file.status}</div>
+                  <div>
+                    - {file.height}x{file.height} - {file.duration}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
