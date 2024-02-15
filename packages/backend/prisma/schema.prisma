@@ -10,35 +10,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id     Int    @id @default(autoincrement())
-  name   String @db.Char(255)
-  status String @db.Char(255)
+model Upload {
+  id          Int    @id @default(autoincrement())
+  upload_hash String @unique @db.Char(32)
+  amount      Int
+  files       File[]
+  user        User   @relation(fields: [user_id], references: [id])
+  user_id     Int
+  status      String @db.Char(255)
 
-  @@map(name: "tasks")
+  @@map(name: "uploads")
 }
 
 model File {
   id                   Int     @id @default(autoincrement())
-  user_id              Int
-  upload_id            String  @db.Char(255)
   name                 String  @db.Char(255)
-  user                 User    @relation(fields: [user_id], references: [id])
   status               String  @db.Char(255)
   width                Int?
   height               Int?
   duration             Float?
   bit_rate             Int?
   display_aspect_ratio String? @db.Char(255)
+  upload_id            Int
+  upload               Upload  @relation(fields: [upload_id], references: [id])
 
   @@map(name: "files")
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String @unique @db.Char(255)
-  password String @db.Char(255)
-  files    File[]
+  id       Int      @id @default(autoincrement())
+  name     String   @unique @db.Char(255)
+  password String   @db.Char(255)
+  uploads  Upload[]
 
   @@map(name: "users")
 }

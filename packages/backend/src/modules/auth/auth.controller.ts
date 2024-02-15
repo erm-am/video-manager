@@ -11,7 +11,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
       return reply.status(200).send({ id, name });
     }
   } catch (error) {
-    return reply.status(400).send('wrong username or password');
+    return reply.status(400).send('Wrong username or password');
   }
 };
 export const logout = async (request: FastifyRequest, reply: FastifyReply) => {

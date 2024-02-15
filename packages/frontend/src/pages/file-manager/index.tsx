@@ -9,10 +9,9 @@ import { useFileManagerStore } from './store';
 
 export const FileManagerPage = () => {
   const getRegisteredFileList = useFileManagerStore((state) => state.getRegisteredFileList);
-  const startFileAnalysis = useFileManagerStore((state) => state.startFileAnalysis);
   const startMergeVideoFiles = useFileManagerStore((state) => state.startMergeVideoFiles);
-  const fileList = useFileManagerStore((state) => state.fileList);
-  const groupedFileList = useFileManagerStore((state) => state.groupedFileList);
+  const uploads = useFileManagerStore((state) => state.uploads);
+
   useEffect(() => {
     getRegisteredFileList();
   }, []);
@@ -31,11 +30,9 @@ export const FileManagerPage = () => {
   return (
     <DefaultLayout>
       <div>
-        {groupedFileList.map(({ uploadId, files }) => (
-          <div key={uploadId}>
-            <h3 onClick={() => startFileAnalysis(uploadId)}>(start meta parser){uploadId}</h3>
-
-            <h3 onClick={() => startMergeVideoFiles(uploadId)}>(merge video files){uploadId}</h3>
+        {uploads.map(({ id, files }) => (
+          <div key={id}>
+            <h3 onClick={() => startMergeVideoFiles(id)}>(merge video files){id}</h3>
             <div>
               {files.map((file) => (
                 <div style={{ display: 'flex' }}>

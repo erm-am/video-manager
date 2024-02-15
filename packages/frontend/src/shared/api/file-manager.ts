@@ -7,7 +7,6 @@ type OnUploadProgress = (percent: number) => void;
 type UploadFilesResponse = {
   id: string;
 };
-
 export type RegisteredFile = {
   id: number;
   user_id: number;
@@ -20,35 +19,35 @@ export type RegisteredFile = {
   bit_rate: number | null;
   display_aspect_ratio: string | null;
 };
-export type RegistredFileListResponse = {
-  fileList: RegisteredFile[];
+
+export type RegisteredUpload = {
+  id: number;
+  amount: number;
+  user_id: number;
+  upload_hash: string;
+  files: RegisteredFile[];
+};
+export type RegistredUploadListResponse = {
+  uploads: RegisteredUpload[];
 };
 
 export const uploadFiles = (files: FileWithPath[], onUploadProgress?: OnUploadProgress): Promise<UploadFilesResponse> => {
-  const id: string = v4();
   let formData = new FormData();
   files.forEach((file) => formData.append(`file`, file));
-
   return new Promise((resolve, reject) => {
     return api
       .post<UploadFilesResponse>(`api/v1/file-manager/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'X-Upload-Id': id,
         },
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (onUploadProgress) onUploadProgress(Math.floor(progressEvent.progress * 100));
         },
       })
-      .then((response) => {
-        resolve({ id: response.data.id });
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
   });
 };
 
-export const getRegisteredFileList = () => api.get<RegistredFileListResponse>(`api/v1/file-manager/registered-file-list`);
-export const startFileAnalysis = (uploadId: string) => api.post(`api/v1/file-manager/file-analysis`, { uploadId });
-export const startMergeVideoFiles = (uploadId: string) => api.post(`api/v1/file-manager/merge-video-files`, { uploadId });
+export const getRegisteredUploadList = () => api.get<RegistredUploadListResponse>(`api/v1/file-manager/upload-list`);
+export const startMergeVideoFiles = (uploadId: number) => api.post(`api/v1/file-manager/merge-video-files`, { uploadId });

@@ -2,49 +2,49 @@ import { createChildProcess } from '@/utils/core.utils.js';
 import { createGetVideoInfoCommand } from './commands.js';
 
 import { groupVideoListByScreenResolution } from './utils.js';
-import { VideoMeta } from '../types.js';
 
-const checkDistinctResolutions = (videoInfoList: VideoMeta[]): boolean => {
+import { ExcludeNull, TransformedFileTableRow } from '@/types.js';
+
+const checkDistinctResolutions = (videoInfoList: TransformedFileTableRow[]): boolean => {
   return groupVideoListByScreenResolution(videoInfoList).length > 1;
 };
 
-const parseStdout = (stdout: string): VideoMeta => {
+const parseStdout = (stdout: string): Partial<TransformedFileTableRow> => {
   const { streams, format } = JSON.parse(stdout);
   const [videoMeta] = streams;
   return {
     path: format.filename,
     width: videoMeta.width,
     height: videoMeta.height,
-    duration: parseFloat(videoMeta.duration),
     displayAspectRatio: videoMeta.display_aspect_ratio,
+    duration: parseFloat(videoMeta.duration),
     bitRate: parseFloat(videoMeta.bit_rate),
   };
 };
-const getMetaInfo = async (videoFilePath: string): Promise<VideoMeta> => {
-  const { stdout } = await createChildProcess('ffprobe', createGetVideoInfoCommand(videoFilePath));
+
+const getMetaData = async (videoFile: TransformedFileTableRow): Promise<Partial<TransformedFileTableRow>> => {
+  const { stdout } = await createChildProcess('ffprobe', createGetVideoInfoCommand(videoFile.path));
   const videoInfo = parseStdout(stdout);
-  return videoInfo;
+  return { id: videoFile.id, ...videoInfo };
 };
 
-const getMetaInfoList = async (videoFilePathList: string[]): Promise<VideoMeta[]> => {
-  const ffprobeProcesses = await Promise.all(
-    videoFilePathList.map((videoFilePath) => createChildProcess('ffprobe', createGetVideoInfoCommand(videoFilePath))),
-  );
-  const videoInfoList = ffprobeProcesses.map(({ stdout }) => parseStdout(stdout));
-  return videoInfoList;
-};
-
-const getVideoListForScaling = (videoInfoList: VideoMeta[]) => {
-  const videoListEntries = groupVideoListByScreenResolution(videoInfoList);
-  const [mostUsedResolution, ...restVideoResolutions] = videoListEntries.toSorted(([, a], [, b]) => b.length - a.length);
-  const [resolution] = mostUsedResolution;
-  const videosToScale = restVideoResolutions.flatMap(([_resolution, videos]) => videos);
-  return { resolution, videosToScale };
+const getVideoListToResize = (videoInfoList: TransformedFileTableRow[]) => {
+  const videosGroupedByScreenResolution = groupVideoListByScreenResolution(videoInfoList);
+  const [mostUsedVideoResolution, ...restVideos] = videosGroupedByScreenResolution.toSorted(([, a], [, b]) => b.length - a.length);
+  const [resulution] = mostUsedVideoResolution;
+  const [width, height] = resulution.split(':');
+  const videosToResize = restVideos.flatMap(([_, videos]) => videos);
+  return {
+    targetResolution: {
+      width: parseInt(width),
+      height: parseInt(height),
+    },
+    videosToResize,
+  };
 };
 
 export const videoAnalizer = {
-  getMetaInfo,
-  getMetaInfoList,
+  getMetaData,
   checkDistinctResolutions,
-  getVideoListForScaling,
+  getVideoListToResize,
 };

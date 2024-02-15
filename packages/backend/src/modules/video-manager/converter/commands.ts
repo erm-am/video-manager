@@ -1,3 +1,5 @@
+import { VideoResolution } from '@/types.js';
+
 export const createJoinVideosCommand = (inputFilePath: string, outputFilePath: string) => {
   // Склеить видео без перекодирования
   // Есть ограничения (разрешения экрана должно совпадать)
@@ -33,10 +35,11 @@ export const createReplaceAudioCommand = (inputVideoFilePath: string, inputAudio
     [outputFileName],
   ];
 };
-export const createCudaResizeCommand = (resolution: string, inputVideoFilePath: string, outputFileName: string) => {
-  // Преобзование разрешение видео через GPU (функция только для Nvidia)
+export const createCudaResizeCommand = (resolution: VideoResolution, inputVideoFilePath: string, outputFileName: string) => {
+  // Преобзование разрешение видео через GPU (пока только для Nvidia)
   // https://docs.nvidia.com/video-technologies/video-codec-sdk/12.1/ffmpeg-with-nvidia-gpu/index.html
   // https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new
+  const { width, height } = resolution;
   return [
     ['-y'],
     ['-hide_banner'],
@@ -44,7 +47,7 @@ export const createCudaResizeCommand = (resolution: string, inputVideoFilePath: 
     ['-hwaccel', 'cuda'],
     ['-hwaccel_output_format', 'cuda'],
     ['-i', inputVideoFilePath],
-    ['-vf', `scale_cuda=${resolution}`],
+    ['-vf', `scale_cuda=${width}:${height}`],
     ['-c:a', 'copy'],
     ['-c:v', 'h264_nvenc'],
     [outputFileName],

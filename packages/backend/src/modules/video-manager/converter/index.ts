@@ -3,30 +3,18 @@ import { createCudaResizeCommand, createJoinVideosCommand, createSplitVideoComma
 import { addPrefixToFileName, createInputFileList, prepareVideoListFormat } from './utils.js';
 
 import { fileUtils } from '@/utils/file.utils.js';
-import { VideoMeta } from '../types.js';
 
-const scaleVideo = async (targetResolution: string, inputFilePath: string, autoRemover = true) => {
+import { TransformedFileTableRow, VideoResolution } from '@/types.js';
+
+const scaleVideo = async (targetResolution: VideoResolution, inputFilePath: string, autoRemover = true) => {
   const originalFilePath = inputFilePath;
   const newFilePath = await addPrefixToFileName(originalFilePath, 'original');
   return createChildProcess('ffmpeg', createCudaResizeCommand(targetResolution, newFilePath, originalFilePath)).then(() => {
     if (autoRemover) fileUtils.removeFile(newFilePath);
   });
 };
-const parallelScaleVideos = async (targetResolution: string, fileListWithMeta: VideoMeta[], autoRemover = true) => {
-  // Паралельное преобразование разрешения видео через GPU
-  const ffprobeProcesses = await Promise.all(
-    fileListWithMeta.map(async (file) => {
-      const originalFilePath = file.path;
-      const newFilePath = await addPrefixToFileName(originalFilePath, 'original');
-      return createChildProcess('ffmpeg', createCudaResizeCommand(targetResolution, newFilePath, originalFilePath)).then(() => {
-        if (autoRemover) fileUtils.removeFile(newFilePath);
-      });
-    }),
-  );
-  return ffprobeProcesses;
-};
 
-const mergeVideos = async (videoFileList: VideoMeta[], outputFilePath: string, autoRemover = true) => {
+const mergeVideos = async (videoFileList: TransformedFileTableRow[], outputFilePath: string, autoRemover = true) => {
   const text = prepareVideoListFormat(videoFileList);
   const inputFile = await createInputFileList(text);
 
@@ -42,7 +30,6 @@ const splitVideo = async (inputFilePath: string, outputFolderPath: string, maxDu
 };
 
 export const videoConverter = {
-  parallelScaleVideos,
   scaleVideo,
   mergeVideos,
   splitVideo,

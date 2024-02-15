@@ -10,14 +10,14 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
-import { videoAnalyzerQueue, mergeVideoFilesQueue } from './queues/index.js';
+import { metaParsingFlow, fileMergingFlow } from './flows/index.js';
 
 const server = async () => {
   const server = fastify({ logger: false });
-  const serverAdapter = new FastifyAdapter();
-  serverAdapter.setBasePath('/ui');
+  const serverAdapter = new FastifyAdapter().setBasePath('/ui');
+
   createBullBoard({
-    queues: [new BullMQAdapter(videoAnalyzerQueue), new BullMQAdapter(mergeVideoFilesQueue)],
+    queues: [...fileMergingFlow.queues, ...metaParsingFlow.queues].map((queue) => new BullMQAdapter(queue)),
     serverAdapter,
   });
 
