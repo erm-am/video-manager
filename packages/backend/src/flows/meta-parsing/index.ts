@@ -32,16 +32,16 @@ const setupMetaParsingFlow = (redisConnectionOptions: RedisConnectionOptions) =>
   const uploadStatusChangerEvents = setupUploadStatusChangerEvents(uploadStatusChangerQueue);
   const metaParserEvents = setupMetaParserEvents(metaParserQueue);
 
-  const startToParseMeta = (fileList: TransformedFileTableRow[], uploadId: number) => {
+  const startToParseMeta = (fileList: TransformedFileTableRow[], uploadId: number, userId: number) => {
     return flow.add({
       name: uploadStatusChangerNames.jobName,
       queueName: uploadStatusChangerNames.queueName,
-      data: { uploadId },
+      data: { uploadId, userId },
       children: fileList.map((file) => {
         return {
           name: metaParserNames.jobName,
           queueName: metaParserNames.queueName,
-          data: { file, uploadId },
+          data: { file, uploadId, userId },
         };
       }),
     });

@@ -6,9 +6,11 @@ import { Job } from 'bullmq';
 type MetaParserJob = {
   file: TransformedFileTableRow;
   uploadId: number;
+  userId: number;
 };
 type UploadStatusChangerJob = {
   uploadId: number;
+  userId: number;
 };
 
 export const createMetaParserProcessor = () => {

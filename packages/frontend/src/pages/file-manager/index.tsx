@@ -4,21 +4,24 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { httpClient } from '@/shared/api';
 import { ProgressBar } from '@/shared/ui/progress-bar';
-import { FileWithPath } from 'react-dropzone';
+
 import { useFileManagerStore } from './store';
 
 export const FileManagerPage = () => {
+  const initSocket = useFileManagerStore((state) => state.initSocket);
+  const closeSocket = useFileManagerStore((state) => state.closeSocket);
   const getRegisteredFileList = useFileManagerStore((state) => state.getRegisteredFileList);
   const startMergeVideoFiles = useFileManagerStore((state) => state.startMergeVideoFiles);
   const uploads = useFileManagerStore((state) => state.uploads);
 
   useEffect(() => {
-    getRegisteredFileList();
+    // getRegisteredFileList();
+    initSocket();
   }, []);
-  const [acceptedFiles, setAcceptedFiles] = useState<FileWithPath[]>([]);
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState(0);
 
-  const onDrop = (acceptedFiles: FileWithPath[]) => setAcceptedFiles(acceptedFiles);
+  const onDrop = (acceptedFiles: File[]) => setAcceptedFiles(acceptedFiles);
   const handleRemoveAll = () => {
     setProgress(0);
     setAcceptedFiles([]);
@@ -27,15 +30,17 @@ export const FileManagerPage = () => {
     httpClient.fileManager.uploadFiles(acceptedFiles, (percent) => setProgress(percent)).catch(() => setProgress(0));
   };
   // TODO, временное решение
+
   return (
     <DefaultLayout>
+      <div onClick={closeSocket}>Close socket</div>
       <div>
         {uploads.map(({ id, files }) => (
           <div key={id}>
             <h3 onClick={() => startMergeVideoFiles(id)}>(merge video files){id}</h3>
             <div>
               {files.map((file) => (
-                <div style={{ display: 'flex' }}>
+                <div key={file.name} style={{ display: 'flex' }}>
                   <div>{file.name}</div>
                   <div> - {file.status}</div>
                   <div>
@@ -52,7 +57,7 @@ export const FileManagerPage = () => {
         {acceptedFiles.map((file) => {
           return (
             <div key={file.name}>
-              <File>{file.path}</File>
+              <File>{file.name}</File>
             </div>
           );
         })}

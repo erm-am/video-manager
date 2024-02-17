@@ -32,7 +32,7 @@ export const uploadFiles = async (request: FastifyRequest<UploadFilesRequest>, r
           const transformedFileTableRow = fileManegerService.transformFileProperties(file, userId);
           return transformedFileTableRow;
         });
-        await metaParsingFlow.actions.startToParseMeta(registeredUploadedFiles, uploadId);
+        await metaParsingFlow.actions.startToParseMeta(registeredUploadedFiles, uploadId, userId);
         return reply.status(200).send({ status: 'ok' });
       } else {
         throw new Error('File registration error');
@@ -66,6 +66,7 @@ export const startMergeVideoFiles = async (request: FastifyRequest<StartMergeVid
       await fileMergingFlow.actions.startToMergeWithResize({
         files: mergeOptions.files,
         uploadId: parseInt(uploadId),
+        userId: userId,
         targetResolution: mergeOptions.targetResolution!,
         videosToResize: mergeOptions.videosToResize!,
         outputFileName: `merged-video.${uniqHash}.mp4`,
@@ -73,6 +74,7 @@ export const startMergeVideoFiles = async (request: FastifyRequest<StartMergeVid
       return reply.status(200).send({ message: 'Flow started' });
     } else {
       await fileMergingFlow.actions.startToMerge({
+        userId: userId,
         uploadId: parseInt(uploadId),
         files: mergeOptions.files,
         outputFileName: `merged-video.${uniqHash}.mp4`,

@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
-import { FileWithPath, useDropzone } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
 import styled from '@emotion/styled';
 
 type UploaderProps = {
-  onDrop: (acceptedFiles: FileWithPath[]) => void;
+  onDrop: (acceptedFiles: File[]) => void;
 };
 export const Uploader = (props: UploaderProps) => {
   const onDrop = useCallback(
-    (acceptedFiles: FileWithPath[]) => {
+    (acceptedFiles: File[]) => {
       props.onDrop(acceptedFiles);
     },
     [props.onDrop],

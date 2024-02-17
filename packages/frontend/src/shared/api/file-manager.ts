@@ -1,7 +1,6 @@
 import { AxiosProgressEvent } from 'axios';
 import { v4 } from 'uuid';
 import { axiosInstance as api } from './axios';
-import { FileWithPath } from 'react-dropzone';
 
 type OnUploadProgress = (percent: number) => void;
 type UploadFilesResponse = {
@@ -31,7 +30,7 @@ export type RegistredUploadListResponse = {
   uploads: RegisteredUpload[];
 };
 
-export const uploadFiles = (files: FileWithPath[], onUploadProgress?: OnUploadProgress): Promise<UploadFilesResponse> => {
+export const uploadFiles = (files: File[], onUploadProgress?: OnUploadProgress): Promise<UploadFilesResponse> => {
   let formData = new FormData();
   files.forEach((file) => formData.append(`file`, file));
   return new Promise((resolve, reject) => {
@@ -49,5 +48,5 @@ export const uploadFiles = (files: FileWithPath[], onUploadProgress?: OnUploadPr
   });
 };
 
-export const getRegisteredUploadList = () => api.get<RegistredUploadListResponse>(`api/v1/file-manager/upload-list`);
+export const getUploadList = () => api.get<RegistredUploadListResponse>(`api/v1/file-manager/upload-list`);
 export const startMergeVideoFiles = (uploadId: number) => api.post(`api/v1/file-manager/merge-video-files`, { uploadId });

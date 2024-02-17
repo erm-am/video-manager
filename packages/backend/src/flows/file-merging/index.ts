@@ -7,6 +7,7 @@ import { VideoResolution, TransformedFileTableRow } from '@/types.js';
 
 type StartToMergeWithResizeOptions = {
   uploadId: number;
+  userId: number;
   files: TransformedFileTableRow[];
   targetResolution: VideoResolution;
   videosToResize: TransformedFileTableRow[];
@@ -15,6 +16,7 @@ type StartToMergeWithResizeOptions = {
 
 type StartToMergeOptions = {
   uploadId: number;
+  userId: number;
   files: TransformedFileTableRow[];
   outputFileName: string;
 };
@@ -47,29 +49,30 @@ const setupFileMergingFlow = (redisConnectionOptions: RedisConnectionOptions) =>
   const mergeEvents = setupMergeEvents(mergeQueue);
 
   const startToMergeWithResize = (options: StartToMergeWithResizeOptions) => {
-    const { files, uploadId, targetResolution, videosToResize } = options;
+    const { files, uploadId, userId, targetResolution, videosToResize } = options;
     return flow.add({
       name: mergeNames.jobName,
       queueName: mergeNames.queueName,
-      data: { uploadId, files },
+      data: { uploadId, files, userId },
       children: videosToResize.map((file) => {
         return {
           name: resizeNames.jobName,
           queueName: resizeNames.queueName,
-          data: { targetResolution, uploadId, file },
+          data: { targetResolution, uploadId, file, userId },
         };
       }),
     });
   };
 
   const startToMerge = (options: StartToMergeOptions) => {
-    const { files, uploadId, outputFileName } = options;
+    const { files, uploadId, userId, outputFileName } = options;
     return flow.add({
       name: mergeNames.jobName,
       queueName: mergeNames.queueName,
       data: {
         files,
         uploadId,
+        userId,
         outputFileName,
       },
     });

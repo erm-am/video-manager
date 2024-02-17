@@ -2,7 +2,7 @@ import fs from 'fs';
 import fastify from 'fastify';
 import fastifyMultipart from '@fastify/multipart';
 import cors from '@fastify/cors';
-import fastifyWebsocket from '@fastify/websocket';
+
 import secureSession from '@fastify/secure-session';
 import { ONE_HOUR_IN_SECONDS, SESSION_SECRET_KEY_PATH } from './configs/core.config.js';
 import { fileManagerRoutes } from './modules/file-manager/file-manager.routes.js';
@@ -12,15 +12,8 @@ import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
 import { metaParsingFlow, fileMergingFlow } from './flows/index.js';
 
-const server = async () => {
+const setupWebServer = async () => {
   const server = fastify({ logger: false });
-  const serverAdapter = new FastifyAdapter().setBasePath('/ui');
-
-  createBullBoard({
-    queues: [...fileMergingFlow.queues, ...metaParsingFlow.queues].map((queue) => new BullMQAdapter(queue)),
-    serverAdapter,
-  });
-
   await server.register(secureSession, {
     sessionName: 'session',
     cookieName: 'my-session',
@@ -32,14 +25,12 @@ const server = async () => {
   });
 
   await server.register(cors);
-  await server.register(fastifyWebsocket);
   await server.register(fastifyMultipart, {
     limits: {
       fileSize: Number.MAX_SAFE_INTEGER,
     },
   });
 
-  await server.register(serverAdapter.registerPlugin() as any, { prefix: '/ui' });
   await server.register(
     async (fastify) => {
       fastify.register(fileManagerRoutes, { prefix: '/file-manager' });
@@ -47,7 +38,17 @@ const server = async () => {
     },
     { prefix: '/api/v1' },
   );
-
+  await setupBullBoard(server);
   return server;
 };
-export { server };
+
+const setupBullBoard = async (server: fastify.FastifyInstance) => {
+  const serverAdapter = new FastifyAdapter();
+  serverAdapter.setBasePath('/ui');
+  createBullBoard({
+    queues: [...fileMergingFlow.queues, ...metaParsingFlow.queues].map((queue) => new BullMQAdapter(queue)),
+    serverAdapter,
+  });
+  await server.register(serverAdapter.registerPlugin() as any, { prefix: '/ui' });
+};
+export { setupWebServer };
