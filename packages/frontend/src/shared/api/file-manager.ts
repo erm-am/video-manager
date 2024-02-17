@@ -25,6 +25,7 @@ export type RegisteredUpload = {
   user_id: number;
   upload_hash: string;
   files: RegisteredFile[];
+  status: any; // todo: использовать backend типы
 };
 export type RegistredUploadListResponse = {
   uploads: RegisteredUpload[];

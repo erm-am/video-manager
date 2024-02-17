@@ -35,9 +35,11 @@ export const FileManagerPage = () => {
     <DefaultLayout>
       <div onClick={closeSocket}>Close socket</div>
       <div>
-        {uploads.map(({ id, files }) => (
+        {uploads.map(({ id, files, status }) => (
           <div key={id}>
-            <h3 onClick={() => startMergeVideoFiles(id)}>(merge video files){id}</h3>
+            <h3 onClick={() => startMergeVideoFiles(id)}>
+              (merge video files){id} - <span style={{ color: 'red' }}>{status}</span>
+            </h3>
             <div>
               {files.map((file) => (
                 <div key={file.name} style={{ display: 'flex' }}>

@@ -49,11 +49,11 @@ const setupFileMergingFlow = (redisConnectionOptions: RedisConnectionOptions) =>
   const mergeEvents = setupMergeEvents(mergeQueue);
 
   const startToMergeWithResize = (options: StartToMergeWithResizeOptions) => {
-    const { files, uploadId, userId, targetResolution, videosToResize } = options;
+    const { files, uploadId, userId, targetResolution, videosToResize, outputFileName } = options;
     return flow.add({
       name: mergeNames.jobName,
       queueName: mergeNames.queueName,
-      data: { uploadId, files, userId },
+      data: { uploadId, files, userId, outputFileName },
       children: videosToResize.map((file) => {
         return {
           name: resizeNames.jobName,
@@ -65,7 +65,7 @@ const setupFileMergingFlow = (redisConnectionOptions: RedisConnectionOptions) =>
   };
 
   const startToMerge = (options: StartToMergeOptions) => {
-    const { files, uploadId, userId, outputFileName } = options;
+    const { uploadId, files, userId, outputFileName } = options;
     return flow.add({
       name: mergeNames.jobName,
       queueName: mergeNames.queueName,

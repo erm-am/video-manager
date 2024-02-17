@@ -59,7 +59,7 @@ export const startMergeVideoFiles = async (request: FastifyRequest<StartMergeVid
   try {
     const { uploadId } = request.body;
     const userId: number = request.session.get('user').id;
-    const uniqHash = getUniqHash();
+    const uniqHash = getUniqHash(12);
 
     const { hasDistinctResolutions, ...mergeOptions } = await fileManegerService.getMergeOptions(parseInt(uploadId), userId);
     if (hasDistinctResolutions) {
