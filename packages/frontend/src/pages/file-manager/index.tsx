@@ -1,26 +1,21 @@
 import { DefaultLayout } from '@/layouts/default';
 import { Uploader } from '@/shared/ui/uploader';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { httpClient } from '@/shared/api';
 import { ProgressBar } from '@/shared/ui/progress-bar';
-
+import { useWebSocket } from '@/shared/ws/use-web-socket';
 import { useFileManagerStore } from './store';
-
 export const FileManagerPage = () => {
-  const initSocket = useFileManagerStore((state) => state.initSocket);
-  const closeSocket = useFileManagerStore((state) => state.closeSocket);
-  const getRegisteredFileList = useFileManagerStore((state) => state.getRegisteredFileList);
-  const startMergeVideoFiles = useFileManagerStore((state) => state.startMergeVideoFiles);
-  const uploads = useFileManagerStore((state) => state.uploads);
-
-  useEffect(() => {
-    // getRegisteredFileList();
-    initSocket();
-  }, []);
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState(0);
 
+  const updateUploadList = useFileManagerStore((state) => state.updateUploadList);
+  const startMergeVideoFiles = useFileManagerStore((state) => state.startMergeVideoFiles);
+  const uploads = useFileManagerStore((state) => state.uploads);
+  const { status, sendMessage, closeSocket } = useWebSocket('ws://127.0.0.1:4000/ws', (message) => {
+    if (message.type === 'UPLOAD_LIST') updateUploadList(message.payload);
+  });
   const onDrop = (acceptedFiles: File[]) => setAcceptedFiles(acceptedFiles);
   const handleRemoveAll = () => {
     setProgress(0);
@@ -33,7 +28,6 @@ export const FileManagerPage = () => {
 
   return (
     <DefaultLayout>
-      <div onClick={closeSocket}>Close socket</div>
       <div>
         {uploads.map(({ id, files, status }) => (
           <div key={id}>
