@@ -3,32 +3,32 @@ import { createGetVideoInfoCommand } from './commands.js';
 
 import { groupVideoListByScreenResolution } from './utils.js';
 
-import { ExcludeNull, TransformedFileTableRow } from '@/types.js';
+import { ExcludeNull, FileRow, FileTableRow, ParsedMetaData } from '@/types.js';
 
-const checkDistinctResolutions = (videoInfoList: TransformedFileTableRow[]): boolean => {
+const checkDistinctResolutions = (videoInfoList: FileTableRow[]): boolean => {
   return groupVideoListByScreenResolution(videoInfoList).length > 1;
 };
 
-const parseStdout = (stdout: string): Partial<TransformedFileTableRow> => {
+const parseStdout = (stdout: string): ParsedMetaData => {
   const { streams, format } = JSON.parse(stdout);
   const [videoMeta] = streams;
   return {
     path: format.filename,
-    width: videoMeta.width,
-    height: videoMeta.height,
+    width: parseInt(videoMeta.width),
+    height: parseInt(videoMeta.height),
     displayAspectRatio: videoMeta.display_aspect_ratio,
     duration: parseFloat(videoMeta.duration),
     bitRate: parseFloat(videoMeta.bit_rate),
   };
 };
 
-const getMetaData = async (videoFile: TransformedFileTableRow): Promise<Partial<TransformedFileTableRow>> => {
+const getMetaData = async (videoFile: FileRow): Promise<FileRow> => {
   const { stdout } = await createChildProcess('ffprobe', createGetVideoInfoCommand(videoFile.path));
-  const videoInfo = parseStdout(stdout);
-  return { id: videoFile.id, ...videoInfo };
+  const parsedMetaData = parseStdout(stdout);
+  return { ...videoFile, ...parsedMetaData };
 };
 
-const getVideoListToResize = (videoInfoList: TransformedFileTableRow[]) => {
+const getVideoListToResize = (videoInfoList: FileTableRow[]) => {
   const videosGroupedByScreenResolution = groupVideoListByScreenResolution(videoInfoList);
   const [mostUsedVideoResolution, ...restVideos] = videosGroupedByScreenResolution.toSorted(([, a], [, b]) => b.length - a.length);
   const [resulution] = mostUsedVideoResolution;

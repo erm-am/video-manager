@@ -1,10 +1,10 @@
 import { videoAnalizer } from '@/modules/video-manager/analyzer/index.js';
-import { TransformedFileTableRow } from '@/types.js';
+import { FileRow } from '@/types.js';
 import { utils } from '@/utils/core.utils.js';
 import { Job } from 'bullmq';
 
 type MetaParserJob = {
-  file: TransformedFileTableRow;
+  file: FileRow;
   uploadId: number;
   userId: number;
 };
@@ -15,8 +15,8 @@ type UploadStatusChangerJob = {
 
 export const createMetaParserProcessor = () => {
   return async (job: Job<MetaParserJob>) => {
-    const metaData = await videoAnalizer.getMetaData(job.data.file);
-    return { message: 'Video metadata has been parsed', metaData };
+    const updatedFileProperties = await videoAnalizer.getMetaData(job.data.file);
+    return { message: 'Video metadata has been parsed', updatedFileProperties };
   };
 };
 export const createUploadStatusChangerProcessor = () => {

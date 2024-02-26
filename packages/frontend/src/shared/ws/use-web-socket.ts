@@ -19,7 +19,9 @@ export function useWebSocket(wsURL, onMessage?, onError?) {
     socketRef.current.onerror = handleError;
     socketRef.current.onmessage = (message) => {
       if (onMessage) {
-        onMessage(JSON.parse(message.data));
+        const data = JSON.parse(message.data);
+        console.log(data);
+        onMessage(data);
       }
     };
     return () => {

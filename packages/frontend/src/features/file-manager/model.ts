@@ -2,34 +2,38 @@ import { httpClient } from '@/shared/api';
 import { RegisteredUpload } from '@/shared/api/file-manager';
 import { create } from 'zustand';
 
-// state
 type FileManagerState = {
-  errors: string | null;
+  errors: string[] | null;
   isLoading: boolean;
   uploads: RegisteredUpload[];
 };
 
-// actions
 type FileManagerActions = {
   updateUploadList: (payload: RegisteredUpload[]) => void;
-  startMergeVideoFiles: (uploadId: number) => Promise<void>;
+  startToMergeVideoFiles: (uploadId: number) => Promise<void>;
 };
 
-export const useFileManagerStore = create<FileManagerState & FileManagerActions>((set, get) => ({
+const initState: FileManagerState = {
   uploads: [],
   errors: null,
   isLoading: false,
+};
+export const useFileManagerStore = create<FileManagerState & FileManagerActions>((set, get) => ({
+  ...initState,
   updateUploadList: (payload) => {
     set({ uploads: payload });
   },
-  startMergeVideoFiles: async (uploadId: number) => {
+  startToMergeVideoFiles: async (uploadId: number) => {
     try {
       set({ isLoading: true });
-      const response = await httpClient.fileManager.startMergeVideoFiles(uploadId);
+      await httpClient.fileManager.startToMergeVideoFiles(uploadId);
     } catch (e) {
-      set({ errors: 'Error' });
+      set({ errors: ['error'] });
     } finally {
       set({ isLoading: false });
     }
+  },
+  reset: () => {
+    set(initState);
   },
 }));

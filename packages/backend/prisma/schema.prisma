@@ -10,38 +10,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Upload {
-  id          Int    @id @default(autoincrement())
-  upload_hash String @unique @db.Char(32)
-  amount      Int
-  files       File[]
-  user        User   @relation(fields: [user_id], references: [id])
-  user_id     Int
-  status      String @db.Char(255)
+model UploadGroup {
+  id        Int    @id @default(autoincrement())
+  groupName String @unique @db.Char(32)
+  amount    Int
+  files     File[]
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int
+  status    String @db.Char(255)
+  stage     String @db.Char(255)
 
-  @@map(name: "uploads")
+  @@map(name: "upload_groups")
 }
 
 model File {
-  id                   Int     @id @default(autoincrement())
-  name                 String  @db.Char(255)
-  status               String  @db.Char(255)
-  width                Int?
-  height               Int?
-  duration             Float?
-  bit_rate             Int?
-  display_aspect_ratio String? @db.Char(255)
-  upload_id            Int
-  upload               Upload  @relation(fields: [upload_id], references: [id])
+  id                 Int         @id @default(autoincrement())
+  name               String      @db.Char(255)
+  path               String      @db.VarChar(1024)
+  status             String      @db.Char(255)
+  stage              String      @db.Char(255)
+  width              Int?
+  height             Int?
+  duration           Float?
+  bitRate            Int?
+  displayAspectRatio String?     @db.Char(255)
+  uploadId           Int
+  upload             UploadGroup @relation(fields: [uploadId], references: [id])
 
   @@map(name: "files")
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  name     String   @unique @db.Char(255)
-  password String   @db.Char(255)
-  uploads  Upload[]
+  id       Int           @id @default(autoincrement())
+  name     String        @unique @db.Char(255)
+  password String        @db.Char(255)
+  uploads  UploadGroup[]
 
   @@map(name: "users")
 }

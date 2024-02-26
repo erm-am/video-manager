@@ -1,7 +1,7 @@
 import { QueueEvents } from 'bullmq';
 import { fileManegerService } from '@/modules/file-manager/file-manager.service.js';
 import { Job, Queue } from 'bullmq';
-import { MergeStatus, ResizeStatus } from '@/types.js';
+import { Stage, Status } from '@/types.js';
 import { socketManager } from '@/sockets/manager.js';
 
 const setupResizeEvents = (queue: Queue) => {
@@ -10,7 +10,10 @@ const setupResizeEvents = (queue: Queue) => {
   queueEvents.on('completed', async ({ jobId }) => {
     const job = await Job.fromId(queue, jobId);
     if (job) {
-      await fileManegerService.updateFileStatus(job.data.file.id, ResizeStatus.Completed);
+      await fileManegerService.updateFileStatus(job.data.file.id, {
+        status: Status.COMPLETED,
+        stage: Stage.RESIZE,
+      });
       await fileManegerService.updateFileResolution(job.data.file.id, job.data.targetResolution);
       await socketManager.sendUploadListToClient(job.data.userId);
     } else {
@@ -21,7 +24,10 @@ const setupResizeEvents = (queue: Queue) => {
   queueEvents.on('active', async ({ jobId }) => {
     const job = await Job.fromId(queue, jobId);
     if (job) {
-      await fileManegerService.updateFileStatus(job.data.file.id, ResizeStatus.InProgress);
+      await fileManegerService.updateFileStatus(job.data.file.id, {
+        status: Status.IN_PROGRESS,
+        stage: Stage.RESIZE,
+      });
       await socketManager.sendUploadListToClient(job.data.userId);
     } else {
       throw new Error('Invalid job id');
@@ -31,7 +37,10 @@ const setupResizeEvents = (queue: Queue) => {
   queueEvents.on('failed', async ({ jobId }) => {
     const job = await Job.fromId(queue, jobId);
     if (job) {
-      await fileManegerService.updateFileStatus(job.data.file.id, ResizeStatus.Failed);
+      await fileManegerService.updateFileStatus(job.data.file.id, {
+        status: Status.FAILED,
+        stage: Stage.RESIZE,
+      });
       await socketManager.sendUploadListToClient(job.data.userId);
     } else {
       console.log('error');
@@ -47,7 +56,10 @@ const setupMergeEvents = (queue: Queue) => {
   queueEvents.on('waiting-children', async ({ jobId }) => {
     const job = await Job.fromId(queue, jobId);
     if (job) {
-      await fileManegerService.updateUploadStatus(job.data.uploadId, ResizeStatus.InProgress);
+      await fileManegerService.updateUploadStatus(job.data.uploadId, {
+        status: Status.IN_PROGRESS,
+        stage: Stage.RESIZE,
+      });
       await socketManager.sendUploadListToClient(job.data.userId);
     } else {
       throw new Error('Invalid job id');
@@ -56,7 +68,10 @@ const setupMergeEvents = (queue: Queue) => {
   queueEvents.on('active', async ({ jobId }) => {
     const job = await Job.fromId(queue, jobId);
     if (job) {
-      await fileManegerService.updateUploadStatus(job.data.uploadId, MergeStatus.InProgress);
+      await fileManegerService.updateUploadStatus(job.data.uploadId, {
+        status: Status.IN_PROGRESS,
+        stage: Stage.MERGE,
+      });
       await socketManager.sendUploadListToClient(job.data.userId);
     } else {
       throw new Error('Invalid job id');
@@ -66,7 +81,10 @@ const setupMergeEvents = (queue: Queue) => {
   queueEvents.on('completed', async ({ jobId }) => {
     const job = await Job.fromId(queue, jobId);
     if (job) {
-      await fileManegerService.updateUploadStatus(job.data.uploadId, MergeStatus.Completed);
+      await fileManegerService.updateUploadStatus(job.data.uploadId, {
+        status: Status.COMPLETED,
+        stage: Stage.MERGE,
+      });
       await socketManager.sendUploadListToClient(job.data.userId);
     } else {
       throw new Error('Invalid job id');
@@ -77,7 +95,10 @@ const setupMergeEvents = (queue: Queue) => {
     queueEvents.on('failed', async ({ jobId }) => {
       const job = await Job.fromId(queue, jobId);
       if (job) {
-        await fileManegerService.updateUploadStatus(job.data.uploadId, MergeStatus.Failed);
+        await fileManegerService.updateUploadStatus(job.data.uploadId, {
+          status: Status.FAILED,
+          stage: Stage.MERGE,
+        });
         await socketManager.sendUploadListToClient(job.data.userId);
       } else {
         console.log('Error');

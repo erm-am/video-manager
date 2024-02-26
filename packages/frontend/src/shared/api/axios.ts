@@ -13,13 +13,13 @@ const createMainAxiosInstance = () => {
   });
 };
 
-const createRequestInterceptorAuth = (instance: AxiosInstance) => {
+const createRequestInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use(
     (config: AdaptAxiosRequestConfig): AdaptAxiosRequestConfig => config,
     (error: AxiosError) => Promise.reject(error),
   );
 };
-const createResponseInterceptorAuth = (instance: AxiosInstance) => {
+const createResponseInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.response.use(
     (response: AxiosResponse): AxiosResponse => response,
     (error: AxiosError) => Promise.reject(error),
@@ -27,6 +27,6 @@ const createResponseInterceptorAuth = (instance: AxiosInstance) => {
 };
 
 const axiosInstance = createMainAxiosInstance();
-createRequestInterceptorAuth(axiosInstance);
-createResponseInterceptorAuth(axiosInstance);
+createRequestInterceptor(axiosInstance);
+createResponseInterceptor(axiosInstance);
 export { axiosInstance };

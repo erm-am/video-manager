@@ -12,27 +12,26 @@ import { getUniqHash } from '@/utils/core.utils.js';
 const pump = util.promisify(pipeline);
 export const uploadFiles = async (request: FastifyRequest<UploadFilesRequest>, reply: FastifyReply) => {
   try {
-    const userId: number = request.session.get('user').id;
     const uploadedFiles: string[] = [];
-    const uploadHash = getUniqHash();
+    const userId: number = request.session.get('user').id;
+    const groupName = getUniqHash();
 
     const userFolderPath = path.resolve(UPLOAD_FOLDER_PATH, userId.toString());
+    const groupFolderPath = path.resolve(userFolderPath, groupName);
+
     if (!fs.existsSync(UPLOAD_FOLDER_PATH)) fs.mkdirSync(UPLOAD_FOLDER_PATH);
     if (!fs.existsSync(userFolderPath)) fs.mkdirSync(userFolderPath);
+    if (!fs.existsSync(groupFolderPath)) fs.mkdirSync(groupFolderPath);
 
     for await (const part of request.files()) {
-      await pump(part.file, fs.createWriteStream(path.resolve(userFolderPath, part.filename)));
+      await pump(part.file, fs.createWriteStream(path.resolve(groupFolderPath, part.filename)));
       uploadedFiles.push(part.filename);
     }
 
     if (uploadedFiles.length > 0) {
-      const { uploadId, files } = await fileManegerService.registerFiles(userId, uploadHash, uploadedFiles);
+      const { uploadId, files } = await fileManegerService.registerFiles(userId, groupName, uploadedFiles);
       if (files) {
-        const registeredUploadedFiles = files.map((file) => {
-          const transformedFileTableRow = fileManegerService.transformFileProperties(file, userId);
-          return transformedFileTableRow;
-        });
-        await metaParsingFlow.actions.startToParseMeta(registeredUploadedFiles, uploadId, userId);
+        await metaParsingFlow.actions.startToParseMeta(files, uploadId, userId);
         return reply.status(200).send({ status: 'ok' });
       } else {
         throw new Error('File registration error');

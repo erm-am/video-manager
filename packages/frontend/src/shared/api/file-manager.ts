@@ -18,14 +18,15 @@ export type RegisteredFile = {
   bit_rate: number | null;
   display_aspect_ratio: string | null;
 };
-
+//todo
 export type RegisteredUpload = {
   id: number;
   amount: number;
   user_id: number;
   upload_hash: string;
   files: RegisteredFile[];
-  status: any; // todo: использовать backend типы
+  status: string;
+  stage: string;
 };
 export type RegistredUploadListResponse = {
   uploads: RegisteredUpload[];
@@ -50,4 +51,4 @@ export const uploadFiles = (files: File[], onUploadProgress?: OnUploadProgress):
 };
 
 export const getUploadList = () => api.get<RegistredUploadListResponse>(`api/v1/file-manager/upload-list`);
-export const startMergeVideoFiles = (uploadId: number) => api.post(`api/v1/file-manager/merge-video-files`, { uploadId });
+export const startToMergeVideoFiles = (uploadId: number) => api.post(`api/v1/file-manager/merge-video-files`, { uploadId });

@@ -1,26 +1,17 @@
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { createRoot } from 'react-dom/client';
 import { Router } from '../router/index';
-import { useAuthStore } from './store';
-export const App = () => {
-  const isAuth = useAuthStore((state) => state.isAuth);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const checkAuth = useAuthStore((state) => state.checkAuth);
-  useEffect(() => {
-    checkAuth();
-  }, []);
 
+import { CheckAuth } from '@/shared/ui/check-auth';
+import { useAuthStore } from '@/auth/auth-store';
+
+export const App = () => {
+  const auth = useAuthStore();
   return (
-    <>
-      {!isAuth || isLoading ? (
-        'loading (check session)'
-      ) : (
-        <BrowserRouter>
-          <Router />
-        </BrowserRouter>
-      )}
-    </>
+    <CheckAuth>
+      <BrowserRouter>
+        <Router isAuthenticated={auth.isAuthenticated} />
+      </BrowserRouter>
+    </CheckAuth>
   );
 };

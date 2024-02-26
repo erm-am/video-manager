@@ -2,11 +2,10 @@ import React, { useCallback, useState } from 'react';
 
 import styled from '@emotion/styled';
 
-interface ProgressBarProps {
+type ProgressBarProps = {
   progress: number;
-}
-export const ProgressBar = (props: ProgressBarProps) => {
-  const { progress } = props;
+};
+export const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
   return (
     <ProgressBarContainer>
       <Progress progress={progress} />
@@ -16,17 +15,13 @@ export const ProgressBar = (props: ProgressBarProps) => {
 
 const ProgressBarContainer = styled.div`
   display: flex;
-  border-radius: 4px;
-  height: 2px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  height: 5px;
   overflow: hidden;
   background-color: #d7d7d7;
 `;
 
-const Progress = styled.div<{ progress: number }>`
+const Progress = styled.div<Pick<ProgressBarProps, 'progress'>>`
   height: 100%;
-
   width: ${({ progress }) => progress}%;
   background-color: #4bbd37;
   transition: width 0.3s ease-in-out;

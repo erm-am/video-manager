@@ -2,21 +2,40 @@ import path from 'path';
 import { UPLOAD_FOLDER_PATH } from '@/configs/core.config.js';
 import { prisma } from '@/configs/prisma-connection.config.js';
 
-import { FileStatus, FileTableRow, VideoResolution, TransformedFileTableRow } from '@/types.js';
+import { VideoResolution, Stage, Status, FileRow, StageAndStatusOptions } from '@/types.js';
 import { videoAnalizer } from '../video-manager/analyzer/index.js';
 
-const registerFiles = async (userId: number, uploadId: string, registredFiles: string[]) => {
-  const upload = await prisma.upload.create({
+type FullPathConfig = {
+  uploadFolder: string;
+  userId: number;
+  groupName: string;
+  fileName: string;
+};
+const getFullPath = (config: FullPathConfig): string => {
+  const fulPath = path.resolve(config.uploadFolder, config.userId.toString(), config.groupName, config.fileName);
+  return fulPath;
+};
+const registerFiles = async (userId: number, groupName: string, registredFiles: string[]) => {
+  const upload = await prisma.uploadGroup.create({
     data: {
       amount: registredFiles.length,
-      user_id: userId,
-      upload_hash: uploadId,
-      status: FileStatus.Uploaded,
+      userId,
+      groupName,
+      status: Status.COMPLETED,
+      stage: Stage.UPLOAD,
       files: {
         create: registredFiles.map((fileName) => {
+          const fullPath = getFullPath({
+            uploadFolder: UPLOAD_FOLDER_PATH,
+            userId,
+            groupName,
+            fileName,
+          });
           return {
             name: fileName,
-            status: FileStatus.Uploaded,
+            path: fullPath,
+            status: Status.COMPLETED,
+            stage: Stage.UPLOAD,
           };
         }),
       },
@@ -35,9 +54,9 @@ const registerFiles = async (userId: number, uploadId: string, registredFiles: s
   }
 };
 const getUploadList = async (userId: number) => {
-  return await prisma.upload.findMany({
+  return await prisma.uploadGroup.findMany({
     where: {
-      user_id: userId,
+      userId,
     },
     include: {
       files: true,
@@ -45,23 +64,12 @@ const getUploadList = async (userId: number) => {
   });
 };
 
-const transformFileProperties = (registredFile: FileTableRow, userId: number): TransformedFileTableRow => {
-  return {
-    id: registredFile.id,
-    path: path.resolve(UPLOAD_FOLDER_PATH, userId.toString(), registredFile.name),
-    width: registredFile.width,
-    height: registredFile.height,
-    duration: registredFile.duration,
-    displayAspectRatio: registredFile.display_aspect_ratio,
-    bitRate: registredFile.bit_rate,
-  };
-};
-const updateFileStatus = async (fileId: number, status: string) => {
+const updateFileStatus = async (fileId: number, options: StageAndStatusOptions) => {
   return await prisma.file.update({
     where: {
       id: fileId,
     },
-    data: { status },
+    data: { status: options.status, stage: options.stage },
   });
 };
 const updateFileResolution = async (fileId: number, resolution: VideoResolution) => {
@@ -75,49 +83,47 @@ const updateFileResolution = async (fileId: number, resolution: VideoResolution)
     },
   });
 };
-const updateUploadStatus = async (uploadId: number, status: string) => {
-  return await prisma.upload.update({
+const updateUploadStatus = async (uploadId: number, options: StageAndStatusOptions) => {
+  return await prisma.uploadGroup.update({
     where: {
       id: uploadId,
     },
-    data: { status },
+    data: { status: options.status, stage: options.stage },
   });
 };
-const updateFileProperties = async (fileId: number, status: string, fileProperties: TransformedFileTableRow) => {
+
+const updateFileProperties = async (fileId: number, options: StageAndStatusOptions & { fileProperties: FileRow }) => {
   return await prisma.file.update({
     where: {
       id: fileId,
     },
     data: {
-      width: fileProperties.width,
-      height: fileProperties.height,
-      duration: fileProperties.duration,
-      bit_rate: fileProperties.bitRate,
-      display_aspect_ratio: fileProperties.displayAspectRatio,
-      status,
+      ...options.fileProperties,
+      status: options.status,
+      stage: options.stage,
     },
   });
 };
 const getMergeOptions = async (uploadId: number, userId: number) => {
   const files = await prisma.file.findMany({
     where: {
-      upload_id: uploadId,
+      uploadId: uploadId,
     },
   });
-  const transformedFiles = files.map((file) => transformFileProperties(file, userId));
-  const hasDistinctResolutions = videoAnalizer.checkDistinctResolutions(transformedFiles);
+
+  const hasDistinctResolutions = videoAnalizer.checkDistinctResolutions(files);
   if (hasDistinctResolutions) {
-    const { targetResolution, videosToResize } = videoAnalizer.getVideoListToResize(transformedFiles);
+    const { targetResolution, videosToResize } = videoAnalizer.getVideoListToResize(files);
     return {
       hasDistinctResolutions,
       targetResolution,
       videosToResize,
-      files: transformedFiles,
+      files,
     };
   } else {
     return {
       hasDistinctResolutions,
-      files: transformedFiles,
+      files,
     };
   }
 };
@@ -129,6 +135,5 @@ export const fileManegerService = {
   updateFileResolution,
   updateUploadStatus,
   updateFileProperties,
-  transformFileProperties,
   getMergeOptions,
 };

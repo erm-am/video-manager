@@ -3,7 +3,7 @@ import { createQueue, createWorkers, getNames } from '../factories.js';
 import { REDIS_CONNECTION, RedisConnectionOptions } from '@/configs/redis.connection.config.js';
 import { createMetaParserProcessor, createUploadStatusChangerProcessor } from './processors.js';
 import { setupUploadStatusChangerEvents, setupMetaParserEvents } from './events.js';
-import { TransformedFileTableRow } from '@/types.js';
+import { FileRow, FileTableRow } from '@/types.js';
 
 const setupMetaParsingFlow = (redisConnectionOptions: RedisConnectionOptions) => {
   const flow = new FlowProducer({ connection: REDIS_CONNECTION });
@@ -32,7 +32,7 @@ const setupMetaParsingFlow = (redisConnectionOptions: RedisConnectionOptions) =>
   const uploadStatusChangerEvents = setupUploadStatusChangerEvents(uploadStatusChangerQueue);
   const metaParserEvents = setupMetaParserEvents(metaParserQueue);
 
-  const startToParseMeta = (fileList: TransformedFileTableRow[], uploadId: number, userId: number) => {
+  const startToParseMeta = (fileList: FileTableRow[], uploadId: number, userId: number) => {
     return flow.add({
       name: uploadStatusChangerNames.jobName,
       queueName: uploadStatusChangerNames.queueName,
