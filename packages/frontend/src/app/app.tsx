@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Router } from '../router/index';
-
+import './init';
 import { CheckAuth } from '@/shared/ui/check-auth';
 import { useAuthStore } from '@/auth/auth-store';
 

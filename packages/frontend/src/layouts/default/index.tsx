@@ -4,47 +4,58 @@ import styled from '@emotion/styled';
 export const DefaultLayout = ({ children }) => {
   return (
     <Page>
-      <Header>Header</Header>
+      <Sidebar>...</Sidebar>
       <Container>
-        <Sidebar>Sidebar</Sidebar>
+        <Header>...</Header>
         <Content>{children}</Content>
       </Container>
     </Page>
   );
 };
 
-const Page = styled.div`
+export const Page = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  height: 100vh;
+  outline: 1px solid pink;
 `;
-const Header = styled.div`
+
+export const Sidebar = styled.div`
+  height: 100%;
   display: flex;
-  flex-shrink: 0;
-  height: 60px;
-  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-  z-index: 10;
+  flex-direction: column;
+  min-height: 0;
+  align-self: flex-start;
+  padding: 20px;
+  flex-basis: 80px;
+  overflow-y: auto;
+`;
+export const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 80px;
+  height: 80px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid black;
 `;
 
 export const Container = styled.div`
   height: 100%;
+  width: 100%;
+  min-width: 0px;
   display: flex;
-  flex: 1;
-  flex-direction: row;
-`;
-
-export const Sidebar = styled.div`
-  display: flex;
-  flex-basis: 200px;
+  flex-direction: column;
 `;
 
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100%;
-  padding: 10px;
-  border: 1px solid red;
-  flex: 1;
+  height: 100%;
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid black;
 `;
