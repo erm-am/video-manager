@@ -4,87 +4,19 @@ import styled from '@emotion/styled';
 import { useTable } from '../use-table';
 import { SubRow } from './sub-row';
 
-export const CollapsibleTable: React.FC = (props) => {
-  const dataSource = {
-    columns: [
-      {
-        id: 'expand',
-        header: '👉',
-        // size: 60,
-        cell: ({ row }) => {
-          return (
-            row.meta.canExpand && (
-              <TableBodyCell>
-                <span
-                  style={{ paddingLeft: `${row.meta.level * 10}px` }}
-                  onClick={() => {
-                    row.meta.toggleExpand(row.code);
-                  }}
-                >
-                  {row.meta.expanded ? '👇' : '👉'}
-                </span>
-              </TableBodyCell>
-            )
-          );
-        },
-      },
-      { id: 'id', header: 'id', size: 60 },
-      { id: 'amount', header: 'amount', size: 60 },
-      { id: 'stage', header: 'stage', size: 120 },
-      { id: 'status', header: 'status', size: 120 },
-      {
-        id: 'actions',
-        header: <div>actions</div>,
-        sticky: true,
-        cell: <div>actions</div>,
-      },
-    ],
-    data: [
-      {
-        id: 1,
-        amount: 555,
-        stage: 'parse',
-        status: 'end',
-        children: [
-          {
-            id: 1,
-            children: [
-              {
-                id: 1,
-                children: [
-                  {
-                    id: 1,
-                    children: [
-                      {
-                        id: 1,
-                        children: [{ id: 1, children: [{ id: 1, children: [{ id: 1, children: [{ id: 1, children: [{ id: 1 }] }] }] }] }],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
+type CollapsibleTableProps = {
+  data: any;
+  columns: any;
+};
 
-      {
-        id: 2,
-        amount: 555,
-        stage: 'parse',
-        status: 'end',
-      },
-    ],
-  };
-
+export const CollapsibleTable: React.FC<CollapsibleTableProps> = (props) => {
   const { columns, data, renderHeaderValue, renderBodyValue, SubRowComponent } = useTable({
-    columns: dataSource.columns,
-    data: dataSource.data,
+    columns: props.columns,
+    data: props.data,
     callapsibleModel: {
       subComponent: SubRow,
     },
   });
-
   return (
     <Container>
       <Table>
@@ -92,7 +24,7 @@ export const CollapsibleTable: React.FC = (props) => {
           <TableHeaderRow>
             {columns.map((column) => {
               return (
-                <TableHeaderCell size={column.size} sticky={column.sticky}>
+                <TableHeaderCell key={column.id} size={column.size} sticky={column.sticky}>
                   {renderHeaderValue({ column })}
                 </TableHeaderCell>
               );
@@ -103,12 +35,16 @@ export const CollapsibleTable: React.FC = (props) => {
           {data.map((row) => {
             return (
               <>
-                <TableBodyRow>
+                <TableBodyRow key={row.id}>
                   {columns.map((column) => {
-                    return <TableBodyCell sticky={column.sticky}>{renderBodyValue({ column, row })}</TableBodyCell>;
+                    return (
+                      <TableBodyCell key={column.id} sticky={column.sticky}>
+                        {renderBodyValue({ column, row })}
+                      </TableBodyCell>
+                    );
                   })}
                 </TableBodyRow>
-                {row.meta.expanded && <SubRowComponent row={row} />}
+                {row.meta.expanded && <SubRowComponent key={row.id} row={row} />}
               </>
             );
           })}
@@ -118,7 +54,6 @@ export const CollapsibleTable: React.FC = (props) => {
   );
 };
 export const Container = styled.div`
-  border: 1px solid green;
   overflow-x: auto;
   width: 100%;
 `;

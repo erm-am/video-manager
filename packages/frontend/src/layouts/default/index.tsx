@@ -57,5 +57,4 @@ export const Content = styled.div`
   height: 100%;
   overflow: auto;
   padding: 20px;
-  border: 1px solid black;
 `;

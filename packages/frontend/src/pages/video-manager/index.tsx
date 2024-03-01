@@ -13,13 +13,11 @@ export const VideoManager = () => {
         <FileManager />
         <UploadManager />
       </VideoManagerContainer>
-      <CollapsibleTable />
     </DefaultLayout>
   );
 };
 
 const VideoManagerContainer = styled.div`
-  border: 1px solid black;
   display: flex;
   flex-direction: column;
 `;

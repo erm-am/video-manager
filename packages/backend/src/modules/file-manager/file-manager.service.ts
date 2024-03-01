@@ -54,14 +54,35 @@ const registerFiles = async (userId: number, groupName: string, registredFiles: 
   }
 };
 const getUploadList = async (userId: number) => {
-  return await prisma.uploadGroup.findMany({
+  const uploadGroups = await prisma.uploadGroup.findMany({
     where: {
       userId,
     },
-    include: {
-      files: true,
+    select: {
+      id: true,
+      amount: true,
+      stage: true,
+      status: true,
+      groupName: true,
+      files: {
+        select: {
+          id: true,
+          stage: true,
+          status: true,
+          name: true,
+          width: true,
+          height: true,
+          bitRate: true,
+          displayAspectRatio: true,
+          duration: true,
+        },
+      },
     },
   });
+  return uploadGroups.map(({ files, ...group }) => ({
+    ...group,
+    children: files,
+  }));
 };
 
 const updateFileStatus = async (fileId: number, options: StageAndStatusOptions) => {
