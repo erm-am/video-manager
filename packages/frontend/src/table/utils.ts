@@ -2,12 +2,21 @@ type CollapsibleProps = {
   toggleExpand: () => void;
 };
 const generatePathCode = (index, path) => (path ? `${path}.${index + 1}` : (index + 1).toString());
-export const createTreeEnhancer = (toggleExpand) => {
+export const createTreeEnhancer = (toggleExpand, getColumns, renderBodyValue, renderHeaderValue) => {
   const enhanceTree = (data, parentPathCode = '') => {
     return data.map((item, index) => {
       const pathCode = generatePathCode(index, parentPathCode);
       const level = pathCode.split('.').length;
-      const meta = { level, expanded: false, canExpand: !!item.children, toggleExpand, pathCode: pathCode };
+      const meta = {
+        level,
+        expanded: false,
+        canExpand: !!item.children,
+        toggleExpand,
+        pathCode: pathCode,
+        getColumns,
+        renderBodyValue,
+        renderHeaderValue,
+      };
       return !item.children ? { ...item, meta } : { ...item, meta, children: enhanceTree(item.children, pathCode) };
     });
   };

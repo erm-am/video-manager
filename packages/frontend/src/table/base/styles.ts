@@ -47,6 +47,7 @@ export const TableBodyRow = styled.tr`
 `;
 export const TableBodyCell = styled.td<{ sticky?: boolean }>`
   height: 30px;
+  text-align: center;
   font-size: 16px;
   ${(props) =>
     props.sticky &&

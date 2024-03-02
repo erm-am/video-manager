@@ -1,28 +1,57 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { Table, TableHeader, TableHeaderRow, TableHeaderCell, TableBody, TableBodyRow, TableBodyCell } from '../base';
 import styled from '@emotion/styled';
 import { useTable } from '../use-table';
 import { SubRow } from './sub-row';
 
+//todo
+type Row = {
+  [key: string]: any;
+  children?: Row[];
+};
+type EnhancedRow = Row & { meta: Meta };
+type Meta = {
+  level: number;
+  pathCode: string;
+  canExpand: boolean;
+  expanded: boolean;
+  getColumns: (props: { level: number }) => ReactElement;
+  renderBodyValue: (props: { column: Column; row: EnhancedRow }) => ReactElement;
+  renderHeaderValue: (props: { column: Column }) => ReactElement;
+  toggleExpand: (pathCode: string) => void;
+};
+
+type Column = {
+  id: string;
+  header?: string | ((props: { column: Column }) => ReactElement);
+  cell?: string | ((props: { column: Column; row: EnhancedRow }) => ReactElement);
+  size?: number;
+  sticky?: boolean;
+};
+type ColumnOptions = {
+  level: number;
+  columns: Column[];
+};
 type CollapsibleTableProps = {
-  data: any;
-  columns: any;
+  data: Row[];
+  columns: ColumnOptions[];
 };
 
 export const CollapsibleTable: React.FC<CollapsibleTableProps> = (props) => {
-  const { columns, data, renderHeaderValue, renderBodyValue, SubRowComponent } = useTable({
+  const { data, renderHeaderValue, renderBodyValue, getColumns, SubRowComponent } = useTable({
     columns: props.columns,
     data: props.data,
     callapsibleModel: {
       subComponent: SubRow,
     },
   });
+
   return (
     <Container>
       <Table>
         <TableHeader>
           <TableHeaderRow>
-            {columns.map((column) => {
+            {getColumns({ level: 1 }).map((column) => {
               return (
                 <TableHeaderCell key={column.id} size={column.size} sticky={column.sticky}>
                   {renderHeaderValue({ column })}
@@ -36,7 +65,7 @@ export const CollapsibleTable: React.FC<CollapsibleTableProps> = (props) => {
             return (
               <>
                 <TableBodyRow key={row.id}>
-                  {columns.map((column) => {
+                  {getColumns({ level: 1 }).map((column) => {
                     return (
                       <TableBodyCell key={column.id} sticky={column.sticky}>
                         {renderBodyValue({ column, row })}

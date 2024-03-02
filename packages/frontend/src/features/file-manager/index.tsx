@@ -16,42 +16,83 @@ export const FileManager: React.FC = () => {
   const columns = useMemo(
     () => [
       {
-        id: 'files',
-        header: '👉',
-        size: 60,
-        cell: ({ row }) => {
-          return (
-            row.meta.canExpand && (
-              <TableBodyCell>
-                <span
-                  style={{ paddingLeft: `${row.meta.level * 10}px` }}
-                  onClick={() => {
-                    row.meta.toggleExpand(row.meta.pathCode);
-                  }}
-                >
-                  {row.meta.expanded ? '👇' : '👉'}
-                </span>
-              </TableBodyCell>
-            )
-          );
-        },
+        level: 1,
+        columns: [
+          {
+            id: 'expand',
+            header: '👉',
+            size: 60,
+            cell: ({ row, column }) => {
+              return (
+                row.meta.canExpand && (
+                  <TableBodyCell>
+                    <span
+                      style={{ paddingLeft: `${row.meta.level * 10}px` }}
+                      onClick={() => {
+                        row.meta.toggleExpand(row.meta.pathCode);
+                      }}
+                    >
+                      {row.meta.expanded ? '👇' : '👉'}
+                    </span>
+                  </TableBodyCell>
+                )
+              );
+            },
+          },
+          { id: 'id', header: 'id', size: 60 },
+          { id: 'amount', header: 'amount', size: 60 },
+          { id: 'groupName', header: 'groupName', size: 120 },
+          { id: 'stage', header: 'stage', size: 120 },
+          { id: 'status', header: 'status', size: 120 },
+          {
+            id: 'actions',
+            header: () => <div>actions</div>,
+            sticky: true,
+            cell: ({ row }) => {
+              return <Button onClick={() => fileManagerStore.startToMergeVideoFiles(row.id)}>Merge</Button>;
+            },
+          },
+        ],
       },
-      { id: 'id', header: 'id', size: 60 },
-      { id: 'amount', header: 'amount', size: 60 },
-      { id: 'groupName', header: 'groupName', size: 120 },
-      { id: 'stage', header: 'stage', size: 120 },
-      { id: 'status', header: 'status', size: 120 },
       {
-        id: 'actions',
-        header: <div>actions</div>,
-        sticky: true,
-        cell: ({ row }) => {
-          return <Button onClick={() => fileManagerStore.startToMergeVideoFiles(row.id)}>Merge</Button>;
-        },
+        level: 2,
+        columns: [
+          {
+            id: 'expand',
+            header: '👉',
+            size: 60,
+            cell: ({ row }) => {
+              return (
+                row.meta.canExpand && (
+                  <TableBodyCell>
+                    <span
+                      style={{ paddingLeft: `${row.meta.level * 10}px` }}
+                      onClick={() => {
+                        row.meta.toggleExpand(row.meta.pathCode);
+                      }}
+                    >
+                      {row.meta.expanded ? '👇' : '👉'}
+                    </span>
+                  </TableBodyCell>
+                )
+              );
+            },
+          },
+          { id: 'id', header: 'id', size: 60 },
+          { id: 'stage', header: 'stage' },
+          { id: 'status', header: 'status' },
+          { id: 'name', header: 'name' },
+          { id: 'width', header: 'width' },
+          { id: 'height', header: 'height' },
+          { id: 'bitRate', header: 'bitRate' },
+          { id: 'displayAspectRatio', header: 'displayAspectRatio' },
+          { id: 'duration', header: 'duration' },
+        ],
       },
     ],
     [],
   );
+
   return (
     <FileManagerContainer>
       <CollapsibleTable columns={columns} data={fileManagerStore.uploads} />
