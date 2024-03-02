@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createTreeEnhancer, findAndUpdateExpanded } from './utils';
+import { createTreeEnhancer } from './utils';
 
 export const useTable = (options) => {
+  const [expandedIds, setExpandedIds] = useState<Map<string, boolean>>(new Map());
   const [columns, setColumns] = useState(options.columns);
   const [data, setData] = useState([]);
 
@@ -18,14 +19,22 @@ export const useTable = (options) => {
   }, []);
 
   const toggleExpand = useCallback((pathCode) => {
-    setData((prev) => findAndUpdateExpanded(prev, pathCode));
+    setExpandedIds((prev) => new Map(prev).set(pathCode, !prev.get(pathCode)));
   }, []);
-
-  const treeEnhancer = useMemo(() => createTreeEnhancer(toggleExpand, getColumns, renderBodyValue, renderHeaderValue), []);
+  const getIsExpanded = useCallback((pathCode: string) => !!expandedIds.get(pathCode), [expandedIds]);
+  const treeEnhancer = useMemo(() => createTreeEnhancer(toggleExpand, getColumns, renderBodyValue, renderHeaderValue, getIsExpanded), []);
 
   useEffect(() => {
     setData(treeEnhancer(options.data));
   }, [options.data]);
 
-  return { data, columns, renderHeaderValue, renderBodyValue, getColumns, SubRowComponent: options.callapsibleModel.subComponent };
+  return {
+    data,
+    columns,
+    getIsExpanded,
+    renderHeaderValue,
+    renderBodyValue,
+    getColumns,
+    SubRowComponent: options.callapsibleModel.subComponent,
+  };
 };

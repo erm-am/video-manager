@@ -14,11 +14,11 @@ type Meta = {
   level: number;
   pathCode: string;
   canExpand: boolean;
-  expanded: boolean;
   getColumns: (props: { level: number }) => ReactElement;
   renderBodyValue: (props: { column: Column; row: EnhancedRow }) => ReactElement;
   renderHeaderValue: (props: { column: Column }) => ReactElement;
   toggleExpand: (pathCode: string) => void;
+  getIsExpanded: (pathCode: string) => boolean;
 };
 
 type Column = {
@@ -38,7 +38,7 @@ type CollapsibleTableProps = {
 };
 
 export const CollapsibleTable: React.FC<CollapsibleTableProps> = (props) => {
-  const { data, renderHeaderValue, renderBodyValue, getColumns, SubRowComponent } = useTable({
+  const { data, renderHeaderValue, renderBodyValue, getColumns, SubRowComponent, getIsExpanded } = useTable({
     columns: props.columns,
     data: props.data,
     callapsibleModel: {
@@ -73,7 +73,7 @@ export const CollapsibleTable: React.FC<CollapsibleTableProps> = (props) => {
                     );
                   })}
                 </TableBodyRow>
-                {row.meta.expanded && <SubRowComponent key={row.id} row={row} />}
+                {getIsExpanded(row.meta.pathCode) && <SubRowComponent key={row.id} row={row} />}
               </>
             );
           })}

@@ -32,7 +32,7 @@ export const SubRow = ({ row }) => {
                       );
                     })}
                   </TableBodyRow>
-                  {row.meta.expanded && <SubRow key={row.id} row={row} />}
+                  {row.meta.getIsExpanded() && <SubRow key={row.id} row={row} />}
                 </>
               );
             })}

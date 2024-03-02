@@ -2,18 +2,18 @@ type CollapsibleProps = {
   toggleExpand: () => void;
 };
 const generatePathCode = (index, path) => (path ? `${path}.${index + 1}` : (index + 1).toString());
-export const createTreeEnhancer = (toggleExpand, getColumns, renderBodyValue, renderHeaderValue) => {
+export const createTreeEnhancer = (toggleExpand, getColumns, renderBodyValue, renderHeaderValue, getIsExpanded) => {
   const enhanceTree = (data, parentPathCode = '') => {
     return data.map((item, index) => {
       const pathCode = generatePathCode(index, parentPathCode);
       const level = pathCode.split('.').length;
       const meta = {
         level,
-        expanded: false,
         canExpand: !!item.children,
         toggleExpand,
         pathCode: pathCode,
         getColumns,
+        getIsExpanded,
         renderBodyValue,
         renderHeaderValue,
       };
@@ -23,13 +23,14 @@ export const createTreeEnhancer = (toggleExpand, getColumns, renderBodyValue, re
   return enhanceTree;
 };
 
-export const findAndUpdateExpanded = (data, pathCode) => {
-  return data.map((item) => {
-    if (item.meta.pathCode === pathCode) {
-      item.meta.expanded = !item.meta.expanded;
-    } else if (item.children) {
-      item.children = findAndUpdateExpanded(item.children, pathCode);
-    }
-    return item;
-  });
-};
+// export const findAndUpdateExpanded = (data, pathCode) => {
+//   return data.map((item) => {
+//     if (item.meta.pathCode === pathCode) {
+//       item.meta.expanded = !item.meta.expanded;
+//     } else if (item.children) {
+//       item.children = findAndUpdateExpanded(item.children, pathCode);
+//     }
+//     return item;
+//   });
+
+// };
