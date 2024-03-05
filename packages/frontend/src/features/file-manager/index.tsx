@@ -22,7 +22,7 @@ export const FileManager: React.FC = () => {
             id: 'expand',
             header: '👉',
             size: 60,
-            cell: ({ row, column }) => {
+            cell: ({ row }) => {
               return (
                 row.meta.canExpand && (
                   <TableBodyCell>
@@ -46,7 +46,7 @@ export const FileManager: React.FC = () => {
           { id: 'status', header: 'status', size: 120 },
           {
             id: 'actions',
-            header: () => <div>actions</div>,
+            header: () => <div>Actions</div>,
             sticky: true,
             cell: ({ row }) => {
               return <Button onClick={() => fileManagerStore.startToMergeVideoFiles(row.id)}>Merge</Button>;
@@ -71,7 +71,7 @@ export const FileManager: React.FC = () => {
                         row.meta.toggleExpand(row.meta.pathCode);
                       }}
                     >
-                      {row.meta.expanded ? '👇' : '👉'}
+                      {row.meta.pathCode} -{row.meta.expanded ? '👇' : '👉'}
                     </span>
                   </TableBodyCell>
                 )

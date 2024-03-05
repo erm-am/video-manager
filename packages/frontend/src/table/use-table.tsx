@@ -3,11 +3,9 @@ import { createTreeEnhancer } from './utils';
 
 export const useTable = (options) => {
   const [expandedIds, setExpandedIds] = useState<Map<string, boolean>>(new Map());
-  const [columns, setColumns] = useState(options.columns);
-  const [data, setData] = useState([]);
 
   const getColumns = useCallback(({ level }) => {
-    return columns.find((item) => item.level === level).columns;
+    return options.columns.find((item) => item.level === level).columns;
   }, []);
 
   const renderBodyValue = useCallback(({ column, row }) => {
@@ -22,15 +20,14 @@ export const useTable = (options) => {
     setExpandedIds((prev) => new Map(prev).set(pathCode, !prev.get(pathCode)));
   }, []);
   const getIsExpanded = useCallback((pathCode: string) => !!expandedIds.get(pathCode), [expandedIds]);
-  const treeEnhancer = useMemo(() => createTreeEnhancer(toggleExpand, getColumns, renderBodyValue, renderHeaderValue, getIsExpanded), []);
-
-  useEffect(() => {
-    setData(treeEnhancer(options.data));
-  }, [options.data]);
+  const treeEnhancer = useMemo(
+    () => createTreeEnhancer(toggleExpand, getColumns, renderBodyValue, renderHeaderValue, getIsExpanded),
+    [expandedIds],
+  );
 
   return {
-    data,
-    columns,
+    data: treeEnhancer(options.data),
+    columns: options.columns,
     getIsExpanded,
     renderHeaderValue,
     renderBodyValue,
