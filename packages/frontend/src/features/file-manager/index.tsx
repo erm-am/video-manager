@@ -32,7 +32,7 @@ export const FileManager: React.FC = () => {
                         row.meta.toggleExpand(row.meta.pathCode);
                       }}
                     >
-                      {row.meta.expanded ? '👇' : '👉'}
+                      {row.meta.getIsExpanded(row.meta.pathCode) ? '👇' : '👉'}
                     </span>
                   </TableBodyCell>
                 )
@@ -49,7 +49,14 @@ export const FileManager: React.FC = () => {
             header: () => <div>Actions</div>,
             sticky: true,
             cell: ({ row }) => {
-              return <Button onClick={() => fileManagerStore.startToMergeVideoFiles(row.id)}>Merge</Button>;
+              const isMergeCompleted = row.status === 'COMPLETED' && row.stage === 'MERGE';
+              return (
+                <>
+                  <Button disabled={isMergeCompleted} onClick={() => fileManagerStore.startToMergeVideoFiles(row.id)}>
+                    Merge
+                  </Button>
+                </>
+              );
             },
           },
         ],
@@ -71,7 +78,7 @@ export const FileManager: React.FC = () => {
                         row.meta.toggleExpand(row.meta.pathCode);
                       }}
                     >
-                      {row.meta.pathCode} -{row.meta.expanded ? '👇' : '👉'}
+                      {row.meta.getIsExpanded(row.meta.pathCode) ? '👇' : '👉'}
                     </span>
                   </TableBodyCell>
                 )
